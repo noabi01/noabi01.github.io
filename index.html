@@ -1,71 +1,756 @@
-function createGRIInterestForm() {
-  // 1. Create the form
-  var form = FormApp.create('GRI Interest Form');
-  
-  // Set description
-  form.setDescription('As GRI continues to grow, we are looking to cultivate meaningful relationships with individuals who resonate with our mission. This form helps us learn more about your interests, skills, professional background, and networks so we can explore possible ways of collaborating and engaging together.');
-  
-  // 2. Automatically collect email addresses
-  form.setCollectEmail(true);
-  
-  // --- Form Questions ---
-  
-  // Question 1: Full Name
-  form.addTextItem()
-      .setTitle('Full name')
-      .setRequired(true);
-      
-  // Question 3: Email Address (Backup/Verification field since collection is automated)
-  form.addTextItem()
-      .setTitle('Email address')
-      .setRequired(true);
-      
-  // Question 4: Phone Number (with number validation)
-  var phoneItem = form.addTextItem();
-  phoneItem.setTitle('Phone number');
-  var numberValidation = FormApp.createTextValidation()
-                                .requireNumber()
-                                .setHelpText('Please enter a valid phone number.')
-                                .build();
-  phoneItem.setValidation(numberValidation);
-  
-  // Question 5: Community / city / region
-  form.addTextItem()
-      .setTitle('Community / city / region')
-      .setRequired(true);
-      
-  // Question 6: Why are you interested...
-  form.addParagraphTextItem()
-      .setTitle('Why are you interested in volunteering with us?')
-      .setRequired(true);
-      
-  // Question 7: Skills Grid (Using a Grid Item for Yes/No/Explain)
-  var skillsGrid = form.addGridItem();
-  skillsGrid.setTitle('Do you have skills in:')
-            .setRows([
-              'Social media skills (running campaigns, ads, etc.)',
-              'Marketing & communications',
-              'Fundraising',
-              'Developing trainings',
-              'Operations & Systems'
-            ])
-            .setColumns(['Yes', 'No', 'Explain/Other details'])
-            .setRequired(true);
-            
-  // Question 7 (Other Option)
-  form.addTextItem()
-      .setTitle('Other skills:');
-      
-  // Question 8: Attach CV (Using the Paragraph Text workaround)
-  form.addParagraphTextItem()
-      .setTitle('Attach your CV (a must) - (Manually change this question type to File Upload in the Form Editor)')
-      .setHelpText('Apps Script does not natively support creating File Upload questions. Please convert this to a File Upload question in your browser.')
-      .setRequired(true);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bead Pattern Designer</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f3f4f6;
+      color: #1f2937;
+      overflow: hidden;
+    }
+    
+    /* Sidebar Layout */
+    #sidebar {
+      width: 320px;
+      background-color: #ffffff;
+      border-right: 1px solid #e5e7eb;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+      z-index: 10;
+    }
+    .header {
+      padding: 16px;
+      background-color: #3b82f6;
+      color: white;
+    }
+    .header h1 { font-size: 1.25rem; font-weight: 600; }
+    .scroll-container {
+      padding: 16px;
+      overflow-y: auto;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .section-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #6b7280;
+      margin-bottom: 8px;
+    }
+    
+    /* Shape & Palette Grids */
+    .shapes-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .shape-card {
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: grab;
+      transition: all 0.2s;
+      background: white;
+    }
+    .shape-card:hover { border-color: #3b82f6; background-color: #eff6ff; }
+    .shape-card svg { width: 36px; height: 36px; fill: #4b5563; }
+    .shape-card span { font-size: 0.75rem; margin-top: 4px; font-weight: 500; }
 
-  // --- Output URLs ---
-  Logger.log('==================================================');
-  Logger.log('Form Created Successfully!');
-  Logger.log('Editor URL (To edit the form): ' + form.getEditUrl());
-  Logger.log('Published URL (To send to users): ' + form.getPublishedUrl());
-  Logger.log('==================================================');
-}
+    .colors-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .color-dot {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: transform 0.1s;
+    }
+    .color-dot:hover { transform: scale(1.1); }
+    .color-dot.active { border-color: #111827; }
+    .custom-color-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    /* Controls Panel */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+    }
+    .btn {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+    .btn:hover { background: #e5e7eb; }
+    .btn-danger { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-primary { background: #3b82f6; color: white; border: none; }
+    .btn-primary:hover { background: #2563eb; }
+
+    .slider-group { display: flex; flex-direction: column; gap: 4px; }
+    .slider-group label { font-size: 0.8rem; font-weight: 500; display: flex; justify-content: space-between; }
+
+    /* Main Area */
+    #workspace {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    #toolbar {
+      height: 48px;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 12px;
+    }
+    #canvas-container {
+      flex-grow: 1;
+      background-color: #e5e7eb;
+      overflow: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    svg#canvas {
+      background-color: white;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      cursor: default;
+    }
+    
+    /* Grid overlay */
+    .grid-line { stroke: #f3f4f6; stroke-width: 1; }
+
+    /* SVG Element styling */
+    .bead { cursor: move; }
+    .bead.selected { stroke: #3b82f6; stroke-width: 2.5px; stroke-dasharray: 4 2; }
+    
+    .shortcut-legend {
+      font-size: 0.75rem;
+      color: #6b7280;
+      line-height: 1.4;
+      background: #f9fafb;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR PANELS -->
+  <div id="sidebar">
+    <div class="header">
+      <h1>Bead Designer</h1>
+    </div>
+
+    <div class="scroll-container">
+      
+      <!-- Palette -->
+      <div>
+        <div class="section-title">Bead Color</div>
+        <div class="colors-grid" id="palette"></div>
+        <div class="custom-color-wrapper">
+          <label for="customColor" style="font-size: 0.8rem;">Custom Color:</label>
+          <input type="color" id="customColor" value="#ec4899" style="cursor:pointer; border:none; background:none;">
+        </div>
+      </div>
+
+      <!-- Drag & Drop Shapes -->
+      <div>
+        <div class="section-title">Drag & Drop Shapes</div>
+        <div class="shapes-grid">
+          <div class="shape-card" draggable="true" data-type="round">
+            <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="16"/><circle cx="20" cy="20" r="4" fill="white"/></svg>
+            <span>Round</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="bicone">
+            <svg viewBox="0 0 40 40"><polygon points="20,4 36,20 20,36 4,20"/><circle cx="20" cy="20" r="3" fill="white"/></svg>
+            <span>Bicone</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="bugle">
+            <svg viewBox="0 0 40 40"><rect x="12" y="4" width="16" height="32" rx="3"/><circle cx="20" cy="20" r="3" fill="white"/></svg>
+            <span>Bugle</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="delica">
+            <svg viewBox="0 0 40 40"><rect x="6" y="10" width="28" height="20" rx="1"/><circle cx="20" cy="20" r="4" fill="white"/></svg>
+            <span>Delica / Cylinder</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Object Controls -->
+      <div>
+        <div class="section-title">Selected Bead Controls</div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div class="slider-group">
+            <label>Rotation <span id="rotVal">0°</span></label>
+            <input type="range" id="rotateSlider" min="0" max="360" value="0" disabled>
+          </div>
+          <div class="controls-grid">
+            <button class="btn" id="btnBringForward" disabled>Layer Up</button>
+            <button class="btn" id="btnSendBackward" disabled>Layer Down</button>
+            <button class="btn" id="btnCopy" disabled>Copy</button>
+            <button class="btn" id="btnPaste" disabled>Paste</button>
+          </div>
+          <button class="btn btn-danger" id="btnDelete" disabled style="width: 100%;">Delete Selected</button>
+        </div>
+      </div>
+
+      <!-- Shortcuts / Help -->
+      <div>
+        <div class="section-title">Keyboard Shortcuts</div>
+        <div class="shortcut-legend">
+          • <b>Arrow Keys:</b> Micro-move 1px (Shift + Arrow: 10px)<br>
+          • <b>Ctrl + Z / Y:</b> Undo / Redo<br>
+          • <b>Ctrl + C / V:</b> Copy / Paste<br>
+          • <b>R:</b> Rotate +15°<br>
+          • <b>Delete / Backspace:</b> Remove bead
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- WORKSPACE -->
+  <div id="workspace">
+    <div id="toolbar">
+      <button class="btn" id="btnUndo">Undo</button>
+      <button class="btn" id="btnRedo">Redo</button>
+      <div style="height: 20px; border-left: 1px solid #d1d5db; margin: 0 4px;"></div>
+      <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+        <input type="checkbox" id="chkSnap" checked> Snap to Grid (10px)
+      </label>
+      <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
+        <input type="checkbox" id="chkGrid" checked> Show Grid
+      </label>
+      <div style="flex-grow: 1;"></div>
+      <button class="btn btn-danger" id="btnReset">Reset Canvas</button>
+      <button class="btn btn-primary" id="btnExport">Export PNG</button>
+    </div>
+
+    <div id="canvas-container">
+      <svg id="canvas" width="800" height="600">
+        <defs>
+          <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f0f0f0" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect id="gridBackground" width="100%" height="100%" fill="url(#gridPattern)" />
+        <g id="beadsGroup"></g>
+      </svg>
+    </div>
+  </div>
+
+  <script>
+    // --- STATE MANAGEMENT ---
+    const STATE = {
+      beads: [],
+      selectedId: null,
+      currentColor: '#ef4444',
+      clipboard: null,
+      history: [],
+      historyStep: -1,
+      gridSize: 10,
+      nextId: 1
+    };
+
+    const presetColors = [
+      '#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', 
+      '#3b82f6', '#6366f1', '#a855f7', '#ec4899', '#ffffff', 
+      '#9ca3af', '#1f2937', '#d97706', '#047857', '#1d4ed8'
+    ];
+
+    // --- DOM ELEMENTS ---
+    const canvas = document.getElementById('canvas');
+    const beadsGroup = document.getElementById('beadsGroup');
+    const palette = document.getElementById('palette');
+    const customColorInput = document.getElementById('customColor');
+    const rotateSlider = document.getElementById('rotateSlider');
+    const rotValDisplay = document.getElementById('rotVal');
+    
+    // Buttons
+    const btnUndo = document.getElementById('btnUndo');
+    const btnRedo = document.getElementById('btnRedo');
+    const btnCopy = document.getElementById('btnCopy');
+    const btnPaste = document.getElementById('btnPaste');
+    const btnDelete = document.getElementById('btnDelete');
+    const btnBringForward = document.getElementById('btnBringForward');
+    const btnSendBackward = document.getElementById('btnSendBackward');
+    const btnReset = document.getElementById('btnReset');
+    const btnExport = document.getElementById('btnExport');
+    const chkSnap = document.getElementById('chkSnap');
+    const chkGrid = document.getElementById('chkGrid');
+
+    // --- INITIALIZATION ---
+    function init() {
+      setupPalette();
+      setupDragAndDrop();
+      setupEventListeners();
+      saveState(); // Save initial empty state
+    }
+
+    // Render Color Palette
+    function setupPalette() {
+      presetColors.forEach(color => {
+        const dot = document.createElement('div');
+        dot.className = `color-dot ${color === STATE.currentColor ? 'active' : ''}`;
+        dot.style.backgroundColor = color;
+        dot.addEventListener('click', () => selectColor(color, dot));
+        palette.appendChild(dot);
+      });
+    }
+
+    function selectColor(color, element) {
+      STATE.currentColor = color;
+      document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
+      if(element) element.classList.add('active');
+      
+      // Recolors selected bead if any
+      if (STATE.selectedId !== null) {
+        const bead = STATE.beads.find(b => b.id === STATE.selectedId);
+        if (bead) {
+          bead.color = color;
+          render();
+          saveState();
+        }
+      }
+    }
+
+    customColorInput.addEventListener('input', (e) => {
+      selectColor(e.target.value, null);
+    });
+
+    // --- SHAPE SVGs GENERATOR ---
+    function getShapePath(type, color) {
+      switch(type) {
+        case 'round':
+          return `<circle cx="0" cy="0" r="16" fill="${color}" stroke="#00000033" stroke-width="1"/>
+                  <circle cx="0" cy="0" r="4" fill="#ffffff" opacity="0.6"/>`;
+        case 'bicone':
+          return `<polygon points="0,-18 16,0 0,18 -16,0" fill="${color}" stroke="#00000033" stroke-width="1"/>
+                  <circle cx="0" cy="0" r="3" fill="#ffffff" opacity="0.6"/>`;
+        case 'bugle':
+          return `<rect x="-8" y="-18" width="16" height="36" rx="3" fill="${color}" stroke="#00000033" stroke-width="1"/>
+                  <circle cx="0" cy="0" r="3" fill="#ffffff" opacity="0.6"/>`;
+        case 'delica':
+          return `<rect x="-14" y="-10" width="28" height="20" rx="2" fill="${color}" stroke="#00000033" stroke-width="1"/>
+                  <circle cx="0" cy="0" r="4" fill="#ffffff" opacity="0.6"/>`;
+        default:
+          return `<circle cx="0" cy="0" r="12" fill="${color}"/>`;
+      }
+    }
+
+    // --- DRAG & DROP FROM SIDEBAR ---
+    function setupDragAndDrop() {
+      document.querySelectorAll('.shape-card').forEach(card => {
+        card.addEventListener('dragstart', (e) => {
+          e.dataTransfer.setData('type', card.dataset.type);
+        });
+      });
+
+      canvas.addEventListener('dragover', (e) => e.preventDefault());
+
+      canvas.addEventListener('drop', (e) => {
+        e.preventDefault();
+        const type = e.dataTransfer.getData('type');
+        if (!type) return;
+
+        const rect = canvas.getBoundingClientRect();
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+
+        if (chkSnap.checked) {
+          x = Math.round(x / STATE.gridSize) * STATE.gridSize;
+          y = Math.round(y / STATE.gridSize) * STATE.gridSize;
+        }
+
+        addBead(type, x, y);
+      });
+    }
+
+    // Add bead to data state
+    function addBead(type, x, y) {
+      const bead = {
+        id: STATE.nextId++,
+        type,
+        x,
+        y,
+        color: STATE.currentColor,
+        rotation: 0
+      };
+      STATE.beads.push(bead);
+      STATE.selectedId = bead.id;
+      render();
+      saveState();
+    }
+
+    // --- RENDER FUNCTION ---
+    function render() {
+      beadsGroup.innerHTML = '';
+
+      STATE.beads.forEach(bead => {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', `bead ${bead.id === STATE.selectedId ? 'selected' : ''}`);
+        g.setAttribute('transform', `translate(${bead.x}, ${bead.y}) rotate(${bead.rotation})`);
+        g.setAttribute('data-id', bead.id);
+
+        g.innerHTML = getShapePath(bead.type, bead.color);
+
+        // Click to Select / Drag internal movement
+        g.addEventListener('mousedown', (e) => startDraggingBead(e, bead.id));
+
+        beadsGroup.appendChild(g);
+      });
+
+      updateUI();
+    }
+
+    // --- BEAD DRAGGING WITHIN CANVAS ---
+    let isDragging = false;
+    let dragOffset = { x: 0, y: 0 };
+
+    function startDraggingBead(e, id) {
+      e.stopPropagation();
+      STATE.selectedId = id;
+      render();
+
+      isDragging = true;
+      const bead = STATE.beads.find(b => b.id === id);
+      
+      const rect = canvas.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      dragOffset.x = mouseX - bead.x;
+      dragOffset.y = mouseY - bead.y;
+
+      window.addEventListener('mousemove', onDragBead);
+      window.addEventListener('mouseup', stopDraggingBead);
+    }
+
+    function onDragBead(e) {
+      if (!isDragging || STATE.selectedId === null) return;
+
+      const bead = STATE.beads.find(b => b.id === STATE.selectedId);
+      const rect = canvas.getBoundingClientRect();
+      
+      let newX = (e.clientX - rect.left) - dragOffset.x;
+      let newY = (e.clientY - rect.top) - dragOffset.y;
+
+      if (chkSnap.checked) {
+        newX = Math.round(newX / STATE.gridSize) * STATE.gridSize;
+        newY = Math.round(newY / STATE.gridSize) * STATE.gridSize;
+      }
+
+      bead.x = newX;
+      bead.y = newY;
+      
+      // Fast DOM update during dragging
+      const el = beadsGroup.querySelector(`[data-id="${bead.id}"]`);
+      if (el) {
+        el.setAttribute('transform', `translate(${bead.x}, ${bead.y}) rotate(${bead.rotation})`);
+      }
+    }
+
+    function stopDraggingBead() {
+      if (isDragging) {
+        isDragging = false;
+        window.removeEventListener('mousemove', onDragBead);
+        window.removeEventListener('mouseup', stopDraggingBead);
+        saveState();
+      }
+    }
+
+    // Deselect when clicking canvas background
+    canvas.addEventListener('mousedown', (e) => {
+      if (e.target.id === 'canvas' || e.target.id === 'gridBackground') {
+        STATE.selectedId = null;
+        render();
+      }
+    });
+
+    // --- UI CONTROLS & LISTENERS ---
+    function updateUI() {
+      const selectedBead = STATE.beads.find(b => b.id === STATE.selectedId);
+      const hasSelection = !!selectedBead;
+
+      rotateSlider.disabled = !hasSelection;
+      btnBringForward.disabled = !hasSelection;
+      btnSendBackward.disabled = !hasSelection;
+      btnCopy.disabled = !hasSelection;
+      btnDelete.disabled = !hasSelection;
+      btnPaste.disabled = !STATE.clipboard;
+
+      if (hasSelection) {
+        rotateSlider.value = selectedBead.rotation;
+        rotValDisplay.textContent = `${selectedBead.rotation}°`;
+      } else {
+        rotateSlider.value = 0;
+        rotValDisplay.textContent = `0°`;
+      }
+
+      btnUndo.disabled = STATE.historyStep <= 0;
+      btnRedo.disabled = STATE.historyStep >= STATE.history.length - 1;
+    }
+
+    function setupEventListeners() {
+      // Rotation Slider
+      rotateSlider.addEventListener('input', (e) => {
+        if (STATE.selectedId !== null) {
+          const bead = STATE.beads.find(b => b.id === STATE.selectedId);
+          if (bead) {
+            bead.rotation = parseInt(e.target.value);
+            rotValDisplay.textContent = `${bead.rotation}°`;
+            render();
+          }
+        }
+      });
+      rotateSlider.addEventListener('change', () => saveState());
+
+      // Copy / Paste / Delete Actions
+      btnCopy.addEventListener('click', copyBead);
+      btnPaste.addEventListener('click', pasteBead);
+      btnDelete.addEventListener('click', deleteBead);
+
+      // Z-Index ordering
+      btnBringForward.addEventListener('click', () => {
+        const idx = STATE.beads.findIndex(b => b.id === STATE.selectedId);
+        if (idx < STATE.beads.length - 1) {
+          const temp = STATE.beads[idx];
+          STATE.beads[idx] = STATE.beads[idx + 1];
+          STATE.beads[idx + 1] = temp;
+          render();
+          saveState();
+        }
+      });
+
+      btnSendBackward.addEventListener('click', () => {
+        const idx = STATE.beads.findIndex(b => b.id === STATE.selectedId);
+        if (idx > 0) {
+          const temp = STATE.beads[idx];
+          STATE.beads[idx] = STATE.beads[idx - 1];
+          STATE.beads[idx - 1] = temp;
+          render();
+          saveState();
+        }
+      });
+
+      // Grid toggles
+      chkGrid.addEventListener('change', (e) => {
+        document.getElementById('gridBackground').style.display = e.target.checked ? 'block' : 'none';
+      });
+
+      // Undo / Redo
+      btnUndo.addEventListener('click', undo);
+      btnRedo.addEventListener('click', redo);
+      btnReset.addEventListener('click', () => {
+        if (confirm("Are you sure you want to clear your bead design?")) {
+          STATE.beads = [];
+          STATE.selectedId = null;
+          render();
+          saveState();
+        }
+      });
+
+      // PNG Export
+      btnExport.addEventListener('click', exportPNG);
+
+      // Keyboard Shortcuts
+      window.addEventListener('keydown', handleKeydown);
+    }
+
+    // --- ACTIONS ---
+    function copyBead() {
+      const bead = STATE.beads.find(b => b.id === STATE.selectedId);
+      if (bead) {
+        STATE.clipboard = { ...bead };
+        updateUI();
+      }
+    }
+
+    function pasteBead() {
+      if (STATE.clipboard) {
+        const newBead = {
+          ...STATE.clipboard,
+          id: STATE.nextId++,
+          x: STATE.clipboard.x + 20,
+          y: STATE.clipboard.y + 20
+        };
+        STATE.beads.push(newBead);
+        STATE.selectedId = newBead.id;
+        render();
+        saveState();
+      }
+    }
+
+    function deleteBead() {
+      if (STATE.selectedId !== null) {
+        STATE.beads = STATE.beads.filter(b => b.id !== STATE.selectedId);
+        STATE.selectedId = null;
+        render();
+        saveState();
+      }
+    }
+
+    // Keyboard Handler (Micro Moves + Shortcuts)
+    function handleKeydown(e) {
+      if (e.target.tagName === 'INPUT') return; // Ignore if typing in text inputs
+
+      // Undo / Redo Shortcuts
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey) redo(); else undo();
+        e.preventDefault();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        redo();
+        e.preventDefault();
+      }
+
+      // Copy / Paste Shortcuts
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+        copyBead();
+        e.preventDefault();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {
+        pasteBead();
+        e.preventDefault();
+      }
+
+      // Delete Shortcuts
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        deleteBead();
+        e.preventDefault();
+      }
+
+      // Quick Rotate ('R')
+      if (e.key.toLowerCase() === 'r' && STATE.selectedId !== null) {
+        const bead = STATE.beads.find(b => b.id === STATE.selectedId);
+        if (bead) {
+          bead.rotation = (bead.rotation + 15) % 360;
+          render();
+          saveState();
+        }
+      }
+
+      // Micro-movement with Arrow keys
+      if (STATE.selectedId !== null && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        const bead = STATE.beads.find(b => b.id === STATE.selectedId);
+        const step = e.shiftKey ? 10 : 1; // 1px or 10px precision
+
+        if (e.key === 'ArrowUp') bead.y -= step;
+        if (e.key === 'ArrowDown') bead.y += step;
+        if (e.key === 'ArrowLeft') bead.x -= step;
+        if (e.key === 'ArrowRight') bead.x += step;
+
+        render();
+        saveState();
+        e.preventDefault();
+      }
+    }
+
+    // --- UNDO / REDO ENGINE ---
+    function saveState() {
+      // Cut off any future steps if we are in the middle of history
+      STATE.history = STATE.history.slice(0, STATE.historyStep + 1);
+      
+      // Save deep copy of beads
+      STATE.history.push(JSON.stringify(STATE.beads));
+      STATE.historyStep++;
+      updateUI();
+    }
+
+    function undo() {
+      if (STATE.historyStep > 0) {
+        STATE.historyStep--;
+        STATE.beads = JSON.parse(STATE.history[STATE.historyStep]);
+        render();
+      }
+    }
+
+    function redo() {
+      if (STATE.historyStep < STATE.history.length - 1) {
+        STATE.historyStep++;
+        STATE.beads = JSON.parse(STATE.history[STATE.historyStep]);
+        render();
+      }
+    }
+
+    // --- EXPORT TO PNG ---
+    function exportPNG() {
+      // Temporarily clear selection box
+      const currentSelected = STATE.selectedId;
+      STATE.selectedId = null;
+      render();
+
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(canvas);
+
+      // Create Image from SVG
+      const img = new Image();
+      const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(svgBlob);
+
+      img.onload = () => {
+        const outputCanvas = document.createElement('canvas');
+        outputCanvas.width = canvas.getAttribute('width');
+        outputCanvas.height = canvas.getAttribute('height');
+        const ctx = outputCanvas.getContext('2d');
+
+        // Fill background white
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
+
+        // Draw image and trigger download
+        ctx.drawImage(img, 0, 0);
+        URL.revokeObjectURL(url);
+
+        const a = document.createElement('a');
+        a.download = 'bead-pattern.png';
+        a.href = outputCanvas.toDataURL('image/png');
+        a.click();
+
+        // Restore selection state
+        STATE.selectedId = currentSelected;
+        render();
+      };
+
+      img.src = url;
+    }
+
+    // Run initialization on load
+    init();
+  </script>
+</body>
+</html>
