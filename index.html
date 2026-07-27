@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Miyuki Bead Pattern Designer</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -251,7 +252,7 @@
           • <b>Arrows:</b> Micro-move 1px (Shift + Arrow: 10px)<br>
           • <b>Ctrl + Z / Y:</b> Undo / Redo<br>
           • <b>Ctrl + C / V:</b> Copy / Paste group<br>
-          • <b>R:</b> Rotate 90° toggle
+          • <b>R:</b> Toggle 0° / 90° orientation
         </div>
       </div>
 
@@ -295,7 +296,7 @@
       clipboard: [],
       history: [],
       historyStep: -1,
-      gridX: 18, // 16px bead + 2px spacing gap
+      gridX: 18,
       gridY: 16,
       nextId: 1
     };
@@ -351,7 +352,6 @@
 
     customColorInput.addEventListener('input', (e) => selectColor(e.target.value, null));
 
-    // --- BEAD VECTOR SVG GENERATORS (Delica, Tilas, etc.) ---
     function getBeadSVG(type, color) {
       switch(type) {
         case 'delica11':
@@ -393,7 +393,6 @@
       }
     }
 
-    // --- GUIDES ---
     function updateGuide() {
       guideGroup.innerHTML = '';
       const type = guideSelect.value;
@@ -430,7 +429,6 @@
     guideSelect.addEventListener('change', updateGuide);
     guideSizeSlider.addEventListener('input', updateGuide);
 
-    // --- DRAG & DROP SHAPES ---
     function setupDragAndDrop() {
       document.querySelectorAll('.shape-card').forEach(card => {
         card.addEventListener('dragstart', (e) => e.dataTransfer.setData('type', card.dataset.type));
@@ -460,7 +458,6 @@
       });
     }
 
-    // --- RENDER ---
     function render() {
       beadsGroup.innerHTML = '';
 
@@ -479,7 +476,6 @@
       });
     }
 
-    // --- MULTI-SELECTION & DRAGGING ---
     let isDraggingBeads = false;
     let isBoxSelecting = false;
     let dragStart = { x: 0, y: 0 };
@@ -509,7 +505,6 @@
       window.addEventListener('mouseup', onMouseUp);
     }
 
-    // Canvas Background Drag Box Select
     canvas.addEventListener('mousedown', (e) => {
       if (e.target.id === 'canvas' || e.target.id === 'gridBackground') {
         if (!e.shiftKey) STATE.selectedIds = [];
@@ -565,7 +560,6 @@
         selectionBox.setAttribute('width', width);
         selectionBox.setAttribute('height', height);
 
-        // Calculate intersecting beads
         STATE.selectedIds = STATE.beads.filter(b => 
           b.x >= x && b.x <= x + width && b.y >= y && b.y <= y + height
         ).map(b => b.id);
@@ -587,7 +581,6 @@
       window.removeEventListener('mouseup', onMouseUp);
     }
 
-    // --- ORIENTATION & BUTTON HANDLERS ---
     function setupEventListeners() {
       document.getElementById('btnOrientH').addEventListener('click', () => setOrientation(0));
       document.getElementById('btnOrientV').addEventListener('click', () => setOrientation(90));
@@ -598,6 +591,12 @@
 
       document.getElementById('btnBringForward').addEventListener('click', () => {
         STATE.beads.sort((a, b) => (STATE.selectedIds.includes(a.id) ? 1 : 0) - (STATE.selectedIds.includes(b.id) ? 1 : 0));
+        render();
+        saveState();
+      });
+
+      document.getElementById('btnSendBackward').addEventListener('click', () => {
+        STATE.beads.sort((a, b) => (STATE.selectedIds.includes(b.id) ? 1 : 0) - (STATE.selectedIds.includes(a.id) ? 1 : 0));
         render();
         saveState();
       });
@@ -677,7 +676,8 @@
       if (e.key === 'Delete' || e.key === 'Backspace') { deleteBeads(); e.preventDefault(); }
 
       if (e.key.toLowerCase() === 'r') {
-        setOrientation(STATE.beads.find(b => STATE.selectedIds.includes(b.id))?.rotation === 0 ? 90 : 0);
+        const current = STATE.beads.find(b => STATE.selectedIds.includes(b.id))?.rotation || 0;
+        setOrientation(current === 0 ? 90 : 0);
       }
 
       if (STATE.selectedIds.length > 0 && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
@@ -696,7 +696,6 @@
       }
     }
 
-    // --- UNDO / REDO ---
     function saveState() {
       STATE.history = STATE.history.slice(0, STATE.historyStep + 1);
       STATE.history.push(JSON.stringify(STATE.beads));
@@ -719,7 +718,6 @@
       }
     }
 
-    // --- EXPORT TO PNG ---
     function exportPNG() {
       const savedSelected = [...STATE.selectedIds];
       STATE.selectedIds = [];
