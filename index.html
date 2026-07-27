@@ -190,7 +190,6 @@
       <div>
         <div class="section-title">Bead Types & Standard Sizes</div>
         <div class="shapes-grid">
-          <!-- Original Miyuki Shapes -->
           <div class="shape-card" draggable="true" data-type="delica11">
             <svg viewBox="-12 -10 24 20">
               <rect x="-8" y="-7" width="16" height="14" rx="2.5" fill="#f97316" stroke="#c2410c" stroke-width="0.8"/>
@@ -221,8 +220,6 @@
             </svg>
             <span>Round 11/0 (2.1mm)</span>
           </div>
-
-          <!-- Extended Gemstrand Shapes -->
           <div class="shape-card" draggable="true" data-type="oval">
             <svg viewBox="-16 -10 32 20">
               <ellipse cx="0" cy="0" rx="14" ry="7" fill="#3b82f6" stroke="#1d4ed8"/>
@@ -279,8 +276,8 @@
       <div>
         <div class="section-title">Selected Orientation & Tools</div>
         <div style="display:flex; gap:6px; margin-bottom:8px;">
-          <button class="btn" id="btnOrientH" style="flex:1;">Horiz (0°)</button>
-          <button class="btn" id="btnOrientV" style="flex:1;">Vert (90°)</button>
+          <button class="btn" id="btnOrientH" style="flex:1;">Vert (0°)</button>
+          <button class="btn" id="btnOrientV" style="flex:1;">Horiz (90°)</button>
         </div>
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
           <button class="btn" id="btnBringForward">Layer Up</button>
@@ -691,12 +688,14 @@
           let offsetX = 0;
           let offsetY = 0;
 
-          // Horizontal/Standard (0deg) -> Paste to the LEFT
-          // Vertical (90deg) -> Paste ABOVE
-          if (b.rotation === 90) {
+          const normRotation = ((b.rotation % 360) + 360) % 360;
+
+          // Standard Vertical Orientation (0° or 180°): paste to the RIGHT (+X)
+          // Standard Horizontal Orientation (90° or 270°): paste ABOVE (-Y)
+          if (normRotation === 90 || normRotation === 270) {
             offsetY = -STATE.gridY * STATE.pasteOffsetCount;
           } else {
-            offsetX = -STATE.gridX * STATE.pasteOffsetCount;
+            offsetX = STATE.gridX * STATE.pasteOffsetCount;
           }
 
           const newBead = {
