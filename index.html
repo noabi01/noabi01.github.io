@@ -6,7 +6,7 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       display: flex;
       height: 100vh;
       background-color: #f3f4f6;
@@ -14,7 +14,6 @@
       overflow: hidden;
     }
     
-    /* Sidebar Layout */
     #sidebar {
       width: 320px;
       background-color: #ffffff;
@@ -29,41 +28,26 @@
       background-color: #2563eb;
       color: white;
     }
-    .header h1 { font-size: 1.25rem; font-weight: 600; }
-    .header p { font-size: 0.75rem; opacity: 0.85; margin-top: 2px; }
+    .header h1 { font-size: 1.2rem; font-weight: 600; }
     .scroll-container {
       padding: 16px;
       overflow-y: auto;
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 16px;
     }
     .section-title {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
       color: #6b7280;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
-    /* Template Guides Selection */
-    select.guide-select {
-      width: 100%;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      font-size: 0.85rem;
-      font-weight: 500;
-      cursor: pointer;
-      margin-bottom: 8px;
-    }
-    .slider-group { display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem; font-weight: 500; }
-    .slider-group div { display: flex; justify-content: space-between; }
+    select, input[type="range"] { width: 100%; }
     
-    /* Shapes Grid */
     .shapes-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -71,79 +55,54 @@
     }
     .shape-card {
       border: 2px solid #e5e7eb;
-      border-radius: 8px;
-      padding: 10px 4px;
+      border-radius: 6px;
+      padding: 6px;
       display: flex;
       flex-direction: column;
       align-items: center;
       cursor: grab;
-      transition: all 0.2s;
+      transition: all 0.15s;
       background: white;
     }
     .shape-card:hover { border-color: #2563eb; background-color: #eff6ff; }
-    .shape-card svg { width: 50px; height: 50px; overflow: visible; }
-    .shape-card span { font-size: 0.7rem; margin-top: 6px; font-weight: 600; text-align: center; line-height: 1.2; }
+    .shape-card svg { width: 40px; height: 32px; }
+    .shape-card span { font-size: 0.72rem; margin-top: 4px; font-weight: 500; text-align: center; }
 
-    /* Palette */
     .colors-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
+      gap: 6px;
     }
     .color-dot {
       width: 100%;
       aspect-ratio: 1;
-      border-radius: 4px; /* Squared off to match bead vibe */
+      border-radius: 50%;
       cursor: pointer;
       border: 2px solid transparent;
-      transition: transform 0.1s;
-      box-shadow: inset 0 2px 4px rgba(255,255,255,0.4), inset 0 -2px 4px rgba(0,0,0,0.2);
     }
-    .color-dot:hover { transform: scale(1.1); }
-    .color-dot.active { border-color: #111827; box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #111827; }
-    .custom-color-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-top: 10px;
-      font-size: 0.8rem;
-    }
-
-    /* Controls */
-    .controls-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-    }
+    .color-dot.active { border-color: #111827; transform: scale(1.08); }
+    
     .btn {
       background: #f3f4f6;
       border: 1px solid #d1d5db;
-      padding: 8px 12px;
+      padding: 6px 10px;
       border-radius: 6px;
       font-size: 0.8rem;
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      transition: background 0.15s;
+      gap: 4px;
     }
     .btn:hover { background: #e5e7eb; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
     .btn-danger { background: #fee2e2; color: #dc2626; border-color: #fca5a5; }
-    .btn-danger:hover:not(:disabled) { background: #fecaca; }
     .btn-primary { background: #2563eb; color: white; border: none; }
-    .btn-primary:hover:not(:disabled) { background: #1d4ed8; }
-    .btn-orient { background: #e0e7ff; color: #3730a3; border-color: #c7d2fe; }
-    .btn-orient:hover:not(:disabled) { background: #c7d2fe; }
 
-    /* Workspace */
     #workspace {
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      position: relative;
     }
     #toolbar {
       height: 48px;
@@ -152,7 +111,7 @@
       display: flex;
       align-items: center;
       padding: 0 16px;
-      gap: 16px;
+      gap: 10px;
     }
     #canvas-container {
       flex-grow: 1;
@@ -165,22 +124,25 @@
     }
     svg#canvas {
       background-color: white;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
-      cursor: crosshair;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     }
     
-    /* Interactive SVG Items */
     .bead { cursor: move; }
-    .bead.selected .selection-ring { 
-      stroke: #2563eb; stroke-width: 2px; fill: none; stroke-dasharray: 4 2; 
-    }
+    .bead.selected .bead-body { stroke: #2563eb !important; stroke-width: 2px !important; }
     
+    #selectionBox {
+      fill: rgba(37, 99, 235, 0.15);
+      stroke: #2563eb;
+      stroke-dasharray: 4 4;
+      pointer-events: none;
+    }
+
     .shortcut-legend {
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       color: #6b7280;
-      line-height: 1.5;
+      line-height: 1.35;
       background: #f9fafb;
-      padding: 10px;
+      padding: 8px;
       border-radius: 6px;
       border: 1px solid #e5e7eb;
     }
@@ -188,185 +150,173 @@
 </head>
 <body>
 
+  <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="header">
       <h1>Miyuki Designer</h1>
-      <p>Precision Bead & Pattern Tool</p>
     </div>
 
     <div class="scroll-container">
       
-      <!-- Design Template Guides -->
+      <!-- Template Guides -->
       <div>
-        <div class="section-title">Design Guide</div>
-        <select id="guideSelect" class="guide-select">
+        <div class="section-title">Guide Template & Resizing</div>
+        <select id="guideSelect" style="padding:6px; border-radius:6px; border:1px solid #d1d5db;">
           <option value="none">None (Blank Canvas)</option>
-          <option value="earring-triangle">Earring: Triangle</option>
-          <option value="earring-hoop">Earring: Circle</option>
-          <option value="earring-diamond">Earring: Diamond</option>
-          <option value="bracelet-rectangle">Bracelet / Grid</option>
+          <option value="earring-triangle">Triangle Template</option>
+          <option value="earring-hoop">Circular / Hoop</option>
+          <option value="earring-diamond">Diamond Shape</option>
+          <option value="bracelet-rectangle">Rectangle Grid</option>
         </select>
-        <div class="slider-group" id="guideScaleWrapper" style="display:none;">
-          <div><span>Guide Size</span> <span id="guideSizeVal">100%</span></div>
-          <input type="range" id="guideScale" min="0.5" max="3" step="0.1" value="1">
+        <div style="margin-top: 8px;">
+          <label style="font-size: 0.75rem;">Template Size: <span id="guideSizeVal">100%</span></label>
+          <input type="range" id="guideSizeSlider" min="30" max="250" value="100">
         </div>
       </div>
 
-      <!-- Color Palette -->
+      <!-- Bead Palette -->
       <div>
-        <div class="section-title">Bead Color</div>
+        <div class="section-title">Palette Color</div>
         <div class="colors-grid" id="palette"></div>
-        <div class="custom-color-wrapper">
-          <label for="customColor">Custom HEX:</label>
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.75rem;">
+          <label for="customColor">Custom:</label>
           <input type="color" id="customColor" value="#ec4899" style="cursor:pointer; border:none; background:none;">
         </div>
       </div>
 
-      <!-- Bead Shapes -->
+      <!-- Miyuki Bead Shapes -->
       <div>
-        <div class="section-title">Drag & Drop Shapes</div>
+        <div class="section-title">Bead Types & Shapes</div>
         <div class="shapes-grid">
-          <div class="shape-card" draggable="true" data-type="delica">
-            <svg viewBox="-25 -25 50 50"><g transform="translate(0,0)"><rect x="-9" y="-7" width="18" height="14" rx="3.5" fill="#f97316"/><rect x="-9" y="-7" width="18" height="14" rx="3.5" fill="url(#glaze)"/></g></svg>
+          <div class="shape-card" draggable="true" data-type="delica11">
+            <svg viewBox="-12 -10 24 20">
+              <rect x="-8" y="-7" width="16" height="14" rx="2.5" fill="#f97316" stroke="#c2410c" stroke-width="0.8"/>
+              <rect x="-6" y="-5" width="12" height="10" rx="1.5" fill="#ffffff" opacity="0.3"/>
+            </svg>
             <span>Delica 11/0</span>
           </div>
-          <div class="shape-card" draggable="true" data-type="round">
-            <svg viewBox="-25 -25 50 50"><g transform="translate(0,0)"><rect x="-9.5" y="-9.5" width="19" height="19" rx="9.5" fill="#f97316"/><rect x="-9.5" y="-9.5" width="19" height="19" rx="9.5" fill="url(#glaze)"/></g></svg>
-            <span>Round 11/0</span>
-          </div>
           <div class="shape-card" draggable="true" data-type="tila">
-            <svg viewBox="-25 -25 50 50"><g transform="translate(0,0)"><rect x="-22" y="-22" width="44" height="44" rx="2" fill="#f97316"/><rect x="-22" y="-22" width="44" height="44" rx="2" fill="url(#glaze)"/></g></svg>
-            <span>Tila</span>
+            <svg viewBox="-16 -16 32 32">
+              <rect x="-14" y="-14" width="28" height="28" rx="2" fill="#3b82f6" stroke="#1d4ed8"/>
+            </svg>
+            <span>Full Tila</span>
           </div>
           <div class="shape-card" draggable="true" data-type="halftila">
-            <svg viewBox="-25 -25 50 50"><g transform="translate(0,0)"><rect x="-22" y="-11" width="44" height="22" rx="2" fill="#f97316"/><rect x="-22" y="-11" width="44" height="22" rx="2" fill="url(#glaze)"/></g></svg>
+            <svg viewBox="-16 -10 32 20">
+              <rect x="-14" y="-7" width="28" height="14" rx="2" fill="#3b82f6" stroke="#1d4ed8"/>
+            </svg>
             <span>Half Tila</span>
           </div>
           <div class="shape-card" draggable="true" data-type="quartertila">
-            <svg viewBox="-25 -25 50 50"><g transform="translate(0,0)"><rect x="-22" y="-6" width="44" height="12" rx="1.5" fill="#f97316"/><rect x="-22" y="-6" width="44" height="12" rx="1.5" fill="url(#glaze)"/></g></svg>
+            <svg viewBox="-16 -6 32 12">
+              <rect x="-14" y="-4" width="28" height="8" rx="1.5" fill="#3b82f6" stroke="#1d4ed8"/>
+            </svg>
             <span>Quarter Tila</span>
           </div>
-          <div class="shape-card" draggable="true" data-type="bugle">
-            <svg viewBox="-25 -25 50 50"><g transform="translate(0,0) rotate(90)"><rect x="-5" y="-22" width="10" height="44" rx="2" fill="#f97316"/><rect x="-5" y="-22" width="10" height="44" rx="2" fill="url(#glaze)"/></g></svg>
-            <span>Bugle</span>
+          <div class="shape-card" draggable="true" data-type="round11">
+            <svg viewBox="-12 -10 24 20">
+              <ellipse cx="0" cy="0" rx="8" ry="7" fill="#10b981" stroke="#047857"/>
+            </svg>
+            <span>Round 11/0</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="drop">
+            <svg viewBox="-12 -12 24 24">
+              <path d="M 0,-9 C 6,-2 6,7 0,9 C -6,7 -6,-2 0,-9 Z" fill="#a855f7" stroke="#7e22ce"/>
+            </svg>
+            <span>Drop Bead</span>
           </div>
         </div>
       </div>
 
       <!-- Controls -->
       <div>
-        <div class="section-title">Selected Bead Controls</div>
-        <div style="display: flex; flex-direction: column; gap: 10px;">
-          <button class="btn btn-orient" id="btnRotate" disabled>Flip 90° (H / V)</button>
-          <div class="controls-grid">
-            <button class="btn" id="btnBringForward" disabled>Layer Up</button>
-            <button class="btn" id="btnSendBackward" disabled>Layer Down</button>
-            <button class="btn" id="btnCopy" disabled>Copy</button>
-            <button class="btn" id="btnPaste" disabled>Paste</button>
-          </div>
-          <button class="btn btn-danger" id="btnDelete" disabled style="width: 100%;">Delete Selected</button>
+        <div class="section-title">Selected Orientation & Tools</div>
+        <div style="display:flex; gap:6px; margin-bottom:8px;">
+          <button class="btn" id="btnOrientH" style="flex:1;">Horiz (0°)</button>
+          <button class="btn" id="btnOrientV" style="flex:1;">Vert (90°)</button>
         </div>
+        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
+          <button class="btn" id="btnBringForward">Layer Up</button>
+          <button class="btn" id="btnSendBackward">Layer Down</button>
+          <button class="btn" id="btnCopy">Copy</button>
+          <button class="btn" id="btnPaste">Paste</button>
+        </div>
+        <button class="btn btn-danger" id="btnDelete" style="width: 100%; margin-top: 6px;">Delete Selected</button>
       </div>
 
-      <!-- Shortcuts -->
       <div>
         <div class="section-title">Shortcuts</div>
         <div class="shortcut-legend">
-          • <b>Arrow Keys:</b> Micro-move 1px (Shift + Arrow: 10px)<br>
-          • <b>Space / R:</b> Flip orientation 90°<br>
+          • <b>Drag Selection Box:</b> Select multiple beads<br>
+          • <b>Arrows:</b> Micro-move 1px (Shift + Arrow: 10px)<br>
           • <b>Ctrl + Z / Y:</b> Undo / Redo<br>
-          • <b>Ctrl + C / V:</b> Copy / Paste<br>
+          • <b>Ctrl + C / V:</b> Copy / Paste group<br>
+          • <b>R:</b> Rotate 90° toggle
         </div>
       </div>
 
     </div>
   </div>
 
+  <!-- WORKSPACE -->
   <div id="workspace">
     <div id="toolbar">
       <button class="btn" id="btnUndo">Undo</button>
       <button class="btn" id="btnRedo">Redo</button>
-      <div style="height: 20px; border-left: 1px solid #d1d5db;"></div>
-      <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-        <input type="checkbox" id="chkSnap" checked> Snap to Grid (2px)
-      </label>
-      <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-        <input type="checkbox" id="chkGrid" checked> Show Background
+      <div style="height: 18px; border-left: 1px solid #d1d5db;"></div>
+      <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 4px;">
+        <input type="checkbox" id="chkSnap" checked> Grid Snap (Precise Spacing)
       </label>
       <div style="flex-grow: 1;"></div>
       <button class="btn btn-danger" id="btnReset">Reset Canvas</button>
-      <button class="btn btn-primary" id="btnExport">Download PNG</button>
+      <button class="btn btn-primary" id="btnExport">Export PNG</button>
     </div>
 
     <div id="canvas-container">
-      <svg id="canvas" width="1000" height="800">
+      <svg id="canvas" width="800" height="650">
         <defs>
-          <!-- Grid Pattern -->
-          <pattern id="gridPattern" width="10" height="10" patternUnits="userSpaceOnUse">
-            <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+          <pattern id="gridPattern" width="18" height="16" patternUnits="userSpaceOnUse">
+            <path d="M 18 0 L 0 0 0 16" fill="none" stroke="#f0f0f0" stroke-width="1"/>
           </pattern>
-          <!-- 3D Glass Bead Glaze Effect -->
-          <linearGradient id="glaze" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.7"/>
-            <stop offset="25%" stop-color="#ffffff" stop-opacity="0.1"/>
-            <stop offset="75%" stop-color="#000000" stop-opacity="0.1"/>
-            <stop offset="100%" stop-color="#000000" stop-opacity="0.6"/>
-          </linearGradient>
         </defs>
-        
         <rect id="gridBackground" width="100%" height="100%" fill="url(#gridPattern)" />
-        <g id="guideGroup" transform="translate(500,400) scale(1)"></g>
+        <g id="guideGroup"></g>
         <g id="beadsGroup"></g>
+        <rect id="selectionBox" x="0" y="0" width="0" height="0" style="display:none;" />
       </svg>
     </div>
   </div>
 
   <script>
-    // --- STATE ---
     const STATE = {
       beads: [],
-      selectedId: null,
-      currentColor: '#f97316',
-      clipboard: null,
+      selectedIds: [],
+      currentColor: '#ef4444',
+      clipboard: [],
       history: [],
       historyStep: -1,
-      gridSize: 2, // 2px snap allows for very precise but aligned micro-spacing
+      gridX: 18, // 16px bead + 2px spacing gap
+      gridY: 16,
       nextId: 1
     };
 
-    // Bead Dimensions & Configurations (Gap is naturally built into these sizes)
-    const BEAD_CONFIG = {
-      delica: { w: 18, h: 14, rx: 3.5 },
-      round: { w: 19, h: 19, rx: 9.5 },
-      tila: { w: 44, h: 44, rx: 2 },
-      halftila: { w: 44, h: 22, rx: 2 },
-      quartertila: { w: 44, h: 12, rx: 1.5 },
-      bugle: { w: 10, h: 44, rx: 2 }
-    };
-
     const presetColors = [
-      '#ef4444', '#f97316', '#facc15', '#a3e635', '#22c55e', 
-      '#06b6d4', '#3b82f6', '#6366f1', '#d946ef', '#f472b6', 
-      '#ffffff', '#e5e7eb', '#9ca3af', '#374151', '#000000'
+      '#ef4444', '#f97316', '#f59e0b', '#10b981', '#06b6d4', 
+      '#3b82f6', '#6366f1', '#a855f7', '#ec4899', '#ffffff', 
+      '#d1d5db', '#1f2937', '#b45309', '#047857', '#1e40af'
     ];
 
-    // --- DOM REFERENCES ---
     const canvas = document.getElementById('canvas');
     const beadsGroup = document.getElementById('beadsGroup');
     const guideGroup = document.getElementById('guideGroup');
     const palette = document.getElementById('palette');
     const customColorInput = document.getElementById('customColor');
-    
     const guideSelect = document.getElementById('guideSelect');
-    const guideScale = document.getElementById('guideScale');
-    const guideScaleWrapper = document.getElementById('guideScaleWrapper');
+    const guideSizeSlider = document.getElementById('guideSizeSlider');
     const guideSizeVal = document.getElementById('guideSizeVal');
-    
-    const btnRotate = document.getElementById('btnRotate');
+    const selectionBox = document.getElementById('selectionBox');
     const chkSnap = document.getElementById('chkSnap');
-    const chkGrid = document.getElementById('chkGrid');
-    
-    // --- INIT ---
+
     function init() {
       setupPalette();
       setupDragAndDrop();
@@ -390,78 +340,104 @@
       document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
       if(element) element.classList.add('active');
       
-      if (STATE.selectedId !== null) {
-        const bead = STATE.beads.find(b => b.id === STATE.selectedId);
-        if (bead) {
-          bead.color = color;
-          render();
-          saveState();
-        }
+      if (STATE.selectedIds.length > 0) {
+        STATE.beads.forEach(b => {
+          if (STATE.selectedIds.includes(b.id)) b.color = color;
+        });
+        render();
+        saveState();
       }
     }
+
     customColorInput.addEventListener('input', (e) => selectColor(e.target.value, null));
 
-    // --- SVG GENERATOR (3D Glaze Look) ---
-    function getBeadSVG(bead) {
-      const conf = BEAD_CONFIG[bead.type] || BEAD_CONFIG.delica;
-      const x = -(conf.w / 2);
-      const y = -(conf.h / 2);
-      
-      // We draw two rectangles: The base color, and an identical one over it with the 3D glaze gradient.
-      // A slightly larger invisible ring is used to show selection state cleanly.
-      return `
-        <rect class="selection-ring" x="${x - 2}" y="${y - 2}" width="${conf.w + 4}" height="${conf.h + 4}" rx="${conf.rx + 1}" stroke="transparent" fill="none" />
-        <rect class="bead-body" x="${x}" y="${y}" width="${conf.w}" height="${conf.h}" rx="${conf.rx}" fill="${bead.color}"/>
-        <rect class="bead-glaze" x="${x}" y="${y}" width="${conf.w}" height="${conf.h}" rx="${conf.rx}" fill="url(#glaze)" pointer-events="none"/>
-      `;
+    // --- BEAD VECTOR SVG GENERATORS (Delica, Tilas, etc.) ---
+    function getBeadSVG(type, color) {
+      switch(type) {
+        case 'delica11':
+          return `
+            <rect class="bead-body" x="-8" y="-7" width="16" height="14" rx="2.5" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+            <rect x="-6" y="-5" width="12" height="10" rx="1.5" fill="#ffffff" opacity="0.25"/>
+            <circle cx="0" cy="0" r="2" fill="#000000" opacity="0.12"/>
+          `;
+        case 'tila':
+          return `
+            <rect class="bead-body" x="-14" y="-14" width="28" height="28" rx="2" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+            <circle cx="-6" cy="0" r="2" fill="#000000" opacity="0.2"/>
+            <circle cx="6" cy="0" r="2" fill="#000000" opacity="0.2"/>
+          `;
+        case 'halftila':
+          return `
+            <rect class="bead-body" x="-14" y="-7" width="28" height="14" rx="2" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+            <circle cx="-6" cy="0" r="1.5" fill="#000000" opacity="0.2"/>
+            <circle cx="6" cy="0" r="1.5" fill="#000000" opacity="0.2"/>
+          `;
+        case 'quartertila':
+          return `
+            <rect class="bead-body" x="-14" y="-4" width="28" height="8" rx="1.5" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+            <circle cx="-6" cy="0" r="1.2" fill="#000000" opacity="0.2"/>
+            <circle cx="6" cy="0" r="1.2" fill="#000000" opacity="0.2"/>
+          `;
+        case 'round11':
+          return `
+            <ellipse class="bead-body" cx="0" cy="0" rx="8" ry="7" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+            <ellipse cx="-2" cy="-2" rx="3" ry="2" fill="#ffffff" opacity="0.3"/>
+          `;
+        case 'drop':
+          return `
+            <path class="bead-body" d="M 0,-10 C 7,-2 7,8 0,10 C -7,8 -7,-2 0,-10 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+            <circle cx="0" cy="-5" r="1.8" fill="#ffffff" opacity="0.6"/>
+          `;
+        default:
+          return `<rect class="bead-body" x="-8" y="-7" width="16" height="14" fill="${color}"/>`;
+      }
     }
 
-    // --- GUIDE TEMPLATES ---
+    // --- GUIDES ---
     function updateGuide() {
       guideGroup.innerHTML = '';
       const type = guideSelect.value;
-      
-      if (type === 'none') {
-        guideScaleWrapper.style.display = 'none';
-        return;
-      }
-      guideScaleWrapper.style.display = 'flex';
+      if (type === 'none') return;
 
-      const scale = guideScale.value;
-      guideGroup.setAttribute('transform', `translate(500,400) scale(${scale})`);
-      guideSizeVal.textContent = `${Math.round(scale * 100)}%`;
+      const scale = parseInt(guideSizeSlider.value) / 100;
+      guideSizeVal.textContent = `${guideSizeSlider.value}%`;
 
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-      g.setAttribute('stroke', '#3b82f6');
-      g.setAttribute('stroke-width', 2 / scale); // keep stroke width visually constant
-      g.setAttribute('stroke-dasharray', `${6/scale} ${4/scale}`);
+      g.setAttribute('stroke', '#2563eb');
+      g.setAttribute('stroke-width', '2');
+      g.setAttribute('stroke-dasharray', '6 4');
       g.setAttribute('fill', 'none');
       g.setAttribute('opacity', '0.4');
 
+      const cx = 400, cy = 325;
+
       if (type === 'earring-triangle') {
-        g.innerHTML = `<polygon points="0,-180 -150,120 150,120" /><circle cx="0" cy="-200" r="8" stroke-dasharray="none"/>`;
+        const h = 180 * scale, w = 150 * scale;
+        g.innerHTML = `<polygon points="${cx},${cy - h} ${cx - w},${cy + h/1.5} ${cx + w},${cy + h/1.5}" />`;
       } else if (type === 'earring-hoop') {
-        g.innerHTML = `<circle cx="0" cy="0" r="140" /><circle cx="0" cy="-155" r="6" stroke-dasharray="none"/>`;
+        g.innerHTML = `<circle cx="${cx}" cy="${cy}" r="${130 * scale}" />`;
       } else if (type === 'earring-diamond') {
-        g.innerHTML = `<polygon points="0,-150 120,0 0,150 -120,0" /><circle cx="0" cy="-170" r="6" stroke-dasharray="none"/>`;
+        const h = 160 * scale, w = 120 * scale;
+        g.innerHTML = `<polygon points="${cx},${cy - h} ${cx + w},${cy} ${cx},${cy + h} ${cx - w},${cy}" />`;
       } else if (type === 'bracelet-rectangle') {
-        g.innerHTML = `<rect x="-250" y="-80" width="500" height="160" rx="4" />`;
+        const w = 400 * scale, h = 180 * scale;
+        g.innerHTML = `<rect x="${cx - w/2}" y="${cy - h/2}" width="${w}" height="${h}" rx="4" />`;
       }
+
       guideGroup.appendChild(g);
     }
 
     guideSelect.addEventListener('change', updateGuide);
-    guideScale.addEventListener('input', updateGuide);
+    guideSizeSlider.addEventListener('input', updateGuide);
 
-    // --- DRAG AND DROP FROM SIDEBAR ---
+    // --- DRAG & DROP SHAPES ---
     function setupDragAndDrop() {
       document.querySelectorAll('.shape-card').forEach(card => {
-        card.addEventListener('dragstart', (e) => {
-          e.dataTransfer.setData('type', card.dataset.type);
-        });
+        card.addEventListener('dragstart', (e) => e.dataTransfer.setData('type', card.dataset.type));
       });
 
       canvas.addEventListener('dragover', (e) => e.preventDefault());
+
       canvas.addEventListener('drop', (e) => {
         e.preventDefault();
         const type = e.dataTransfer.getData('type');
@@ -472,226 +448,248 @@
         let y = e.clientY - rect.top;
 
         if (chkSnap.checked) {
-          x = Math.round(x / STATE.gridSize) * STATE.gridSize;
-          y = Math.round(y / STATE.gridSize) * STATE.gridSize;
+          x = Math.round(x / STATE.gridX) * STATE.gridX;
+          y = Math.round(y / STATE.gridY) * STATE.gridY;
         }
 
-        // Bugle defaults to vertical
-        const rotation = type === 'bugle' ? 90 : 0; 
-        addBead(type, x, y, rotation);
+        const newBead = { id: STATE.nextId++, type, x, y, color: STATE.currentColor, rotation: 0 };
+        STATE.beads.push(newBead);
+        STATE.selectedIds = [newBead.id];
+        render();
+        saveState();
       });
-    }
-
-    function addBead(type, x, y, rotation = 0) {
-      const bead = {
-        id: STATE.nextId++,
-        type,
-        x,
-        y,
-        color: STATE.currentColor,
-        rotation
-      };
-      STATE.beads.push(bead);
-      STATE.selectedId = bead.id;
-      render();
-      saveState();
     }
 
     // --- RENDER ---
     function render() {
       beadsGroup.innerHTML = '';
+
       STATE.beads.forEach(bead => {
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-        g.setAttribute('class', `bead ${bead.id === STATE.selectedId ? 'selected' : ''}`);
+        const isSelected = STATE.selectedIds.includes(bead.id);
+        g.setAttribute('class', `bead ${isSelected ? 'selected' : ''}`);
         g.setAttribute('transform', `translate(${bead.x}, ${bead.y}) rotate(${bead.rotation})`);
         g.setAttribute('data-id', bead.id);
-        g.innerHTML = getBeadSVG(bead);
-        
-        g.addEventListener('mousedown', (e) => startDraggingBead(e, bead.id));
+
+        g.innerHTML = getBeadSVG(bead.type, bead.color);
+
+        g.addEventListener('mousedown', (e) => onBeadMouseDown(e, bead.id));
+
         beadsGroup.appendChild(g);
       });
-      updateUI();
     }
 
-    // --- INTERACTIVE PRECISE DRAGGING ---
-    let isDragging = false;
-    let dragStartOffset = { x: 0, y: 0 };
+    // --- MULTI-SELECTION & DRAGGING ---
+    let isDraggingBeads = false;
+    let isBoxSelecting = false;
+    let dragStart = { x: 0, y: 0 };
+    let initialBeadPositions = [];
 
-    function startDraggingBead(e, id) {
+    function onBeadMouseDown(e, id) {
       e.stopPropagation();
-      STATE.selectedId = id;
-      render();
 
-      isDragging = true;
-      const bead = STATE.beads.find(b => b.id === id);
-      const rect = canvas.getBoundingClientRect();
-      
-      // Calculate precise offset so it doesn't snap to center on click
-      dragStartOffset.x = (e.clientX - rect.left) - bead.x;
-      dragStartOffset.y = (e.clientY - rect.top) - bead.y;
-
-      window.addEventListener('mousemove', onDragBead);
-      window.addEventListener('mouseup', stopDraggingBead);
-    }
-
-    function onDragBead(e) {
-      if (!isDragging || STATE.selectedId === null) return;
-
-      const bead = STATE.beads.find(b => b.id === STATE.selectedId);
-      const rect = canvas.getBoundingClientRect();
-      
-      let newX = (e.clientX - rect.left) - dragStartOffset.x;
-      let newY = (e.clientY - rect.top) - dragStartOffset.y;
-
-      if (chkSnap.checked) {
-        newX = Math.round(newX / STATE.gridSize) * STATE.gridSize;
-        newY = Math.round(newY / STATE.gridSize) * STATE.gridSize;
+      if (!STATE.selectedIds.includes(id)) {
+        if (e.shiftKey) {
+          STATE.selectedIds.push(id);
+        } else {
+          STATE.selectedIds = [id];
+        }
+        render();
       }
 
-      bead.x = newX;
-      bead.y = newY;
-      
-      const el = beadsGroup.querySelector(`[data-id="${bead.id}"]`);
-      if (el) el.setAttribute('transform', `translate(${bead.x}, ${bead.y}) rotate(${bead.rotation})`);
+      isDraggingBeads = true;
+      const rect = canvas.getBoundingClientRect();
+      dragStart = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
+      initialBeadPositions = STATE.beads
+        .filter(b => STATE.selectedIds.includes(b.id))
+        .map(b => ({ id: b.id, x: b.x, y: b.y }));
+
+      window.addEventListener('mousemove', onMouseMove);
+      window.addEventListener('mouseup', onMouseUp);
     }
 
-    function stopDraggingBead() {
-      if (isDragging) {
-        isDragging = false;
-        window.removeEventListener('mousemove', onDragBead);
-        window.removeEventListener('mouseup', stopDraggingBead);
-        saveState();
-      }
-    }
-
+    // Canvas Background Drag Box Select
     canvas.addEventListener('mousedown', (e) => {
       if (e.target.id === 'canvas' || e.target.id === 'gridBackground') {
-        STATE.selectedId = null;
+        if (!e.shiftKey) STATE.selectedIds = [];
         render();
+
+        isBoxSelecting = true;
+        const rect = canvas.getBoundingClientRect();
+        dragStart = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+
+        selectionBox.setAttribute('x', dragStart.x);
+        selectionBox.setAttribute('y', dragStart.y);
+        selectionBox.setAttribute('width', 0);
+        selectionBox.setAttribute('height', 0);
+        selectionBox.style.display = 'block';
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
       }
     });
 
-    // --- UI & SHORTCUTS ---
-    function updateUI() {
-      const hasSelection = !!STATE.selectedId;
-      btnRotate.disabled = !hasSelection;
-      document.getElementById('btnBringForward').disabled = !hasSelection;
-      document.getElementById('btnSendBackward').disabled = !hasSelection;
-      document.getElementById('btnCopy').disabled = !hasSelection;
-      document.getElementById('btnDelete').disabled = !hasSelection;
-      document.getElementById('btnPaste').disabled = !STATE.clipboard;
-      
-      document.getElementById('btnUndo').disabled = STATE.historyStep <= 0;
-      document.getElementById('btnRedo').disabled = STATE.historyStep >= STATE.history.length - 1;
-    }
+    function onMouseMove(e) {
+      const rect = canvas.getBoundingClientRect();
+      const currentX = e.clientX - rect.left;
+      const currentY = e.clientY - rect.top;
 
-    function rotateSelected() {
-      if (STATE.selectedId !== null) {
-        const bead = STATE.beads.find(b => b.id === STATE.selectedId);
-        if (bead) {
-          bead.rotation = bead.rotation === 0 ? 90 : 0; // Flip exactly 90 degrees
-          render();
-          saveState();
-        }
+      if (isDraggingBeads) {
+        let dx = currentX - dragStart.x;
+        let dy = currentY - dragStart.y;
+
+        initialBeadPositions.forEach(pos => {
+          const bead = STATE.beads.find(b => b.id === pos.id);
+          if (bead) {
+            let nx = pos.x + dx;
+            let ny = pos.y + dy;
+
+            if (chkSnap.checked) {
+              nx = Math.round(nx / STATE.gridX) * STATE.gridX;
+              ny = Math.round(ny / STATE.gridY) * STATE.gridY;
+            }
+            bead.x = nx;
+            bead.y = ny;
+          }
+        });
+        render();
+      } else if (isBoxSelecting) {
+        const x = Math.min(dragStart.x, currentX);
+        const y = Math.min(dragStart.y, currentY);
+        const width = Math.abs(currentX - dragStart.x);
+        const height = Math.abs(currentY - dragStart.y);
+
+        selectionBox.setAttribute('x', x);
+        selectionBox.setAttribute('y', y);
+        selectionBox.setAttribute('width', width);
+        selectionBox.setAttribute('height', height);
+
+        // Calculate intersecting beads
+        STATE.selectedIds = STATE.beads.filter(b => 
+          b.x >= x && b.x <= x + width && b.y >= y && b.y <= y + height
+        ).map(b => b.id);
+
+        render();
       }
     }
 
+    function onMouseUp() {
+      if (isDraggingBeads) saveState();
+      isDraggingBeads = false;
+
+      if (isBoxSelecting) {
+        selectionBox.style.display = 'none';
+        isBoxSelecting = false;
+      }
+
+      window.removeEventListener('mousemove', onMouseMove);
+      window.removeEventListener('mouseup', onMouseUp);
+    }
+
+    // --- ORIENTATION & BUTTON HANDLERS ---
     function setupEventListeners() {
-      btnRotate.addEventListener('click', rotateSelected);
-      
-      document.getElementById('btnCopy').addEventListener('click', copyBead);
-      document.getElementById('btnPaste').addEventListener('click', pasteBead);
-      document.getElementById('btnDelete').addEventListener('click', deleteBead);
+      document.getElementById('btnOrientH').addEventListener('click', () => setOrientation(0));
+      document.getElementById('btnOrientV').addEventListener('click', () => setOrientation(90));
 
-      document.getElementById('btnBringForward').addEventListener('click', () => changeZIndex(1));
-      document.getElementById('btnSendBackward').addEventListener('click', () => changeZIndex(-1));
+      document.getElementById('btnCopy').addEventListener('click', copyBeads);
+      document.getElementById('btnPaste').addEventListener('click', pasteBeads);
+      document.getElementById('btnDelete').addEventListener('click', deleteBeads);
 
-      chkGrid.addEventListener('change', (e) => {
-        document.getElementById('gridBackground').style.display = e.target.checked ? 'block' : 'none';
+      document.getElementById('btnBringForward').addEventListener('click', () => {
+        STATE.beads.sort((a, b) => (STATE.selectedIds.includes(a.id) ? 1 : 0) - (STATE.selectedIds.includes(b.id) ? 1 : 0));
+        render();
+        saveState();
       });
 
       document.getElementById('btnUndo').addEventListener('click', undo);
       document.getElementById('btnRedo').addEventListener('click', redo);
       document.getElementById('btnReset').addEventListener('click', () => {
-        if (confirm("Reset canvas and clear all beads?")) {
+        if (confirm("Clear design?")) {
           STATE.beads = [];
-          STATE.selectedId = null;
+          STATE.selectedIds = [];
           render();
           saveState();
         }
       });
+
       document.getElementById('btnExport').addEventListener('click', exportPNG);
       window.addEventListener('keydown', handleKeydown);
     }
 
-    function copyBead() {
-      const bead = STATE.beads.find(b => b.id === STATE.selectedId);
-      if (bead) { STATE.clipboard = { ...bead }; updateUI(); }
-    }
-
-    function pasteBead() {
-      if (STATE.clipboard) {
-        // Paste slightly offset based on orientation for easy chaining
-        const offset = STATE.clipboard.rotation === 90 ? { x: 0, y: 15 } : { x: 20, y: 0 };
-        const newBead = {
-          ...STATE.clipboard,
-          id: STATE.nextId++,
-          x: STATE.clipboard.x + offset.x,
-          y: STATE.clipboard.y + offset.y
-        };
-        STATE.beads.push(newBead);
-        STATE.selectedId = newBead.id;
+    function setOrientation(angle) {
+      if (STATE.selectedIds.length > 0) {
+        STATE.beads.forEach(b => {
+          if (STATE.selectedIds.includes(b.id)) b.rotation = angle;
+        });
         render();
         saveState();
       }
     }
 
-    function deleteBead() {
-      if (STATE.selectedId !== null) {
-        STATE.beads = STATE.beads.filter(b => b.id !== STATE.selectedId);
-        STATE.selectedId = null;
+    function copyBeads() {
+      STATE.clipboard = STATE.beads
+        .filter(b => STATE.selectedIds.includes(b.id))
+        .map(b => ({ ...b }));
+    }
+
+    function pasteBeads() {
+      if (STATE.clipboard.length > 0) {
+        const newIds = [];
+        STATE.clipboard.forEach(b => {
+          const newBead = {
+            ...b,
+            id: STATE.nextId++,
+            x: b.x + STATE.gridX,
+            y: b.y + STATE.gridY
+          };
+          STATE.beads.push(newBead);
+          newIds.push(newBead.id);
+        });
+        STATE.selectedIds = newIds;
         render();
         saveState();
       }
     }
 
-    function changeZIndex(dir) {
-      const idx = STATE.beads.findIndex(b => b.id === STATE.selectedId);
-      if (dir === 1 && idx < STATE.beads.length - 1) {
-        [STATE.beads[idx], STATE.beads[idx+1]] = [STATE.beads[idx+1], STATE.beads[idx]];
-      } else if (dir === -1 && idx > 0) {
-        [STATE.beads[idx], STATE.beads[idx-1]] = [STATE.beads[idx-1], STATE.beads[idx]];
-      } else return;
-      render();
-      saveState();
+    function deleteBeads() {
+      if (STATE.selectedIds.length > 0) {
+        STATE.beads = STATE.beads.filter(b => !STATE.selectedIds.includes(b.id));
+        STATE.selectedIds = [];
+        render();
+        saveState();
+      }
     }
 
     function handleKeydown(e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
 
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') { e.shiftKey ? redo() : undo(); e.preventDefault(); }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') { redo(); e.preventDefault(); }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') { copyBead(); e.preventDefault(); }
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') { pasteBead(); e.preventDefault(); }
-      
-      if (e.key === 'Delete' || e.key === 'Backspace') { deleteBead(); e.preventDefault(); }
-      
-      // Spacebar or R to Rotate Orientation
-      if ((e.key === ' ' || e.key.toLowerCase() === 'r') && STATE.selectedId !== null) {
-        rotateSelected();
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (e.shiftKey) redo(); else undo();
+        e.preventDefault();
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
+        redo();
         e.preventDefault();
       }
 
-      // Micro-movement with Keyboard Arrows (1px precision)
-      if (STATE.selectedId !== null && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-        const bead = STATE.beads.find(b => b.id === STATE.selectedId);
-        const step = e.shiftKey ? 10 : 1; 
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') { copyBeads(); e.preventDefault(); }
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') { pasteBeads(); e.preventDefault(); }
+      if (e.key === 'Delete' || e.key === 'Backspace') { deleteBeads(); e.preventDefault(); }
 
-        if (e.key === 'ArrowUp') bead.y -= step;
-        if (e.key === 'ArrowDown') bead.y += step;
-        if (e.key === 'ArrowLeft') bead.x -= step;
-        if (e.key === 'ArrowRight') bead.x += step;
+      if (e.key.toLowerCase() === 'r') {
+        setOrientation(STATE.beads.find(b => STATE.selectedIds.includes(b.id))?.rotation === 0 ? 90 : 0);
+      }
 
+      if (STATE.selectedIds.length > 0 && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+        const step = e.shiftKey ? 10 : 1;
+        STATE.beads.forEach(b => {
+          if (STATE.selectedIds.includes(b.id)) {
+            if (e.key === 'ArrowUp') b.y -= step;
+            if (e.key === 'ArrowDown') b.y += step;
+            if (e.key === 'ArrowLeft') b.x -= step;
+            if (e.key === 'ArrowRight') b.x += step;
+          }
+        });
         render();
         saveState();
         e.preventDefault();
@@ -703,8 +701,8 @@
       STATE.history = STATE.history.slice(0, STATE.historyStep + 1);
       STATE.history.push(JSON.stringify(STATE.beads));
       STATE.historyStep++;
-      updateUI();
     }
+
     function undo() {
       if (STATE.historyStep > 0) {
         STATE.historyStep--;
@@ -712,6 +710,7 @@
         render();
       }
     }
+
     function redo() {
       if (STATE.historyStep < STATE.history.length - 1) {
         STATE.historyStep++;
@@ -720,35 +719,39 @@
       }
     }
 
-    // --- PNG EXPORT ---
+    // --- EXPORT TO PNG ---
     function exportPNG() {
-      const currentSelected = STATE.selectedId;
-      STATE.selectedId = null;
+      const savedSelected = [...STATE.selectedIds];
+      STATE.selectedIds = [];
       render();
 
-      const svgString = new XMLSerializer().serializeToString(canvas);
+      const serializer = new XMLSerializer();
+      const svgString = serializer.serializeToString(canvas);
+
       const img = new Image();
       const svgBlob = new Blob([svgString], { type: 'image/svg+xml;charset=utf-8' });
       const url = URL.createObjectURL(svgBlob);
 
       img.onload = () => {
-        const outCanvas = document.createElement('canvas');
-        outCanvas.width = canvas.getAttribute('width');
-        outCanvas.height = canvas.getAttribute('height');
-        const ctx = outCanvas.getContext('2d');
+        const outputCanvas = document.createElement('canvas');
+        outputCanvas.width = canvas.getAttribute('width');
+        outputCanvas.height = canvas.getAttribute('height');
+        const ctx = outputCanvas.getContext('2d');
+
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+        ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
         ctx.drawImage(img, 0, 0);
         URL.revokeObjectURL(url);
 
         const a = document.createElement('a');
-        a.download = 'bead-pattern.png';
-        a.href = outCanvas.toDataURL('image/png');
+        a.download = 'miyuki-bead-pattern.png';
+        a.href = outputCanvas.toDataURL('image/png');
         a.click();
 
-        STATE.selectedId = currentSelected;
+        STATE.selectedIds = savedSelected;
         render();
       };
+
       img.src = url;
     }
 
