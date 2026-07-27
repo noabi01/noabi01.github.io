@@ -287,7 +287,7 @@
         </div>
       </div>
 
-      <!-- Controls & Custom Angle Selector -->
+      <!-- Controls & 0°-360° Angle Selector -->
       <div>
         <div class="section-title">Selected Orientation & Tools</div>
         
@@ -335,7 +335,7 @@
         <input type="checkbox" id="chkSnap" checked> Grid Snap
       </label>
       <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 4px; margin-left: 10px;">
-        <input type="checkbox" id="chkFineSnap"> Sub-pixel Trackpad Precision
+        <input type="checkbox" id="chkFineSnap"> Sub-pixel Precision
       </label>
       <div style="flex-grow: 1;"></div>
       <button class="btn btn-danger" id="btnReset">Reset Canvas</button>
@@ -524,7 +524,7 @@
           y = Math.round(y * 2) / 2;
         }
 
-        const newBead = { id: STATE.nextId++, type, x, y, color: STATE.currentColor, rotation: 0 };
+        const newBead = { id: STATE.nextId++, type, x, y, color: STATE.currentColor, rotation: parseInt(angleSlider.value) || 0 };
         STATE.beads.push(newBead);
         STATE.selectedIds = [newBead.id];
         syncAngleControls();
@@ -797,7 +797,7 @@
 
       if (e.key.toLowerCase() === 'r') {
         const first = STATE.beads.find(b => STATE.selectedIds.includes(b.id));
-        const current = first ? first.rotation : 0;
+        const current = first ? first.rotation : parseInt(angleSlider.value) || 0;
         setOrientation((current + 15) % 360);
       }
 
