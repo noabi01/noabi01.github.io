@@ -6,15 +6,14 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       display: flex;
       height: 100vh;
       background-color: #f3f4f6;
       color: #1f2937;
       overflow: hidden;
     }
-
-    /* Sidebar Layout */
+    
     #sidebar {
       width: 320px;
       background-color: #ffffff;
@@ -36,10 +35,10 @@
       flex-grow: 1;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 20px;
     }
     .section-title {
-      font-size: 0.8rem;
+      font-size: 0.85rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -47,7 +46,6 @@
       margin-bottom: 8px;
     }
 
-    /* Grid & Templates */
     .shapes-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -66,9 +64,8 @@
     }
     .shape-card:hover { border-color: #2563eb; background-color: #eff6ff; }
     .shape-card svg { width: 36px; height: 36px; fill: #4b5563; }
-    .shape-card span { font-size: 0.75rem; margin-top: 4px; font-weight: 600; text-align: center; }
+    .shape-card span { font-size: 0.75rem; margin-top: 4px; font-weight: 500; text-align: center; }
 
-    /* Palette */
     .colors-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -91,7 +88,6 @@
       margin-top: 8px;
     }
 
-    /* Controls Panel */
     .controls-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -119,9 +115,7 @@
 
     .slider-group { display: flex; flex-direction: column; gap: 4px; }
     .slider-group label { font-size: 0.8rem; font-weight: 500; display: flex; justify-content: space-between; }
-    select { padding: 6px; border-radius: 6px; border: 1px solid #d1d5db; width: 100%; }
 
-    /* Main Area */
     #workspace {
       flex-grow: 1;
       display: flex;
@@ -152,10 +146,11 @@
       cursor: default;
     }
 
-    /* SVG Element styling */
     .bead { cursor: move; }
-    .bead.selected { stroke: #2563eb; stroke-width: 2.5px; stroke-dasharray: 4 2; }
+    .bead.selected .bead-shape { stroke: #2563eb; stroke-width: 2px; stroke-dasharray: 4 2; }
     
+    .guide-shape { fill: none; stroke: #cbd5e1; stroke-width: 2; stroke-dasharray: 6 4; pointer-events: none; }
+
     .shortcut-legend {
       font-size: 0.75rem;
       color: #6b7280;
@@ -165,69 +160,76 @@
       border-radius: 6px;
       border: 1px solid #e5e7eb;
     }
+    select {
+      padding: 6px;
+      border-radius: 6px;
+      border: 1px solid #d1d5db;
+      background: white;
+      font-size: 0.85rem;
+    }
   </style>
 </head>
 <body>
 
-  <!-- SIDEBAR -->
+  <!-- SIDEBAR PANELS -->
   <div id="sidebar">
     <div class="header">
-      <h1>Miyuki Bead Designer</h1>
+      <h1>Miyuki Designer</h1>
     </div>
 
     <div class="scroll-container">
       
       <!-- Palette -->
       <div>
-        <div class="section-title">Bead Color Palette</div>
+        <div class="section-title">Bead Color</div>
         <div class="colors-grid" id="palette"></div>
         <div class="custom-color-wrapper">
           <label for="customColor" style="font-size: 0.8rem;">Custom Color:</label>
-          <input type="color" id="customColor" value="#ec4899" style="cursor:pointer; border:none; background:none;">
+          <input type="color" id="customColor" value="#ef4444" style="cursor:pointer; border:none; background:none;">
         </div>
       </div>
 
-      <!-- Miyuki Bead Types -->
+      <!-- Miyuki Shapes Catalog -->
       <div>
-        <div class="section-title">Miyuki Bead Types (Drag & Drop)</div>
+        <div class="section-title">Miyuki Shapes (Drag to Canvas)</div>
         <div class="shapes-grid">
-          <div class="shape-card" draggable="true" data-type="delica11">
-            <svg viewBox="0 0 40 40"><rect x="10" y="8" width="20" height="24" rx="2"/><circle cx="20" cy="20" r="4" fill="white"/></svg>
-            <span>Delica 11/0</span>
+          <div class="shape-card" draggable="true" data-type="delica">
+            <svg viewBox="-20 -20 40 40"><rect x="-12" y="-14" width="24" height="28" rx="2" fill="#ef4444"/></svg>
+            <span>Delica (DB 11/0)</span>
           </div>
-          <div class="shape-card" draggable="true" data-type="round11">
-            <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="14"/><circle cx="20" cy="20" r="4" fill="white"/></svg>
-            <span>Round Seed 11/0</span>
-          </div>
-          <div class="shape-card" draggable="true" data-type="bugle">
-            <svg viewBox="0 0 40 40"><rect x="14" y="4" width="12" height="32" rx="2"/><circle cx="20" cy="20" r="3" fill="white"/></svg>
-            <span>Bugle 6mm</span>
+          <div class="shape-card" draggable="true" data-type="round">
+            <svg viewBox="-20 -20 40 40"><circle cx="0" cy="0" r="14" fill="#ef4444"/></svg>
+            <span>Rocaille / Round</span>
           </div>
           <div class="shape-card" draggable="true" data-type="tila">
-            <svg viewBox="0 0 40 40"><rect x="6" y="6" width="28" height="28" rx="2"/><circle cx="13" cy="20" r="3" fill="white"/><circle cx="27" cy="20" r="3" fill="white"/></svg>
-            <span>Tila (2-Hole)</span>
+            <svg viewBox="-20 -20 40 40"><rect x="-15" y="-15" width="30" height="30" rx="1" fill="#ef4444"/></svg>
+            <span>Tila (5x5mm)</span>
           </div>
-          <div class="shape-card" draggable="true" data-type="drop">
-            <svg viewBox="0 0 40 40"><path d="M20,6 C10,20 8,26 8,30 A12,12 0 0,0 32,30 C32,26 30,20 20,6 Z"/><circle cx="20" cy="14" r="3" fill="white"/></svg>
-            <span>Drop / Fringe</span>
+          <div class="shape-card" draggable="true" data-type="half-tila">
+            <svg viewBox="-20 -20 40 40"><rect x="-15" y="-7" width="30" height="14" rx="1" fill="#ef4444"/></svg>
+            <span>Half Tila</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="quarter-tila">
+            <svg viewBox="-20 -20 40 40"><rect x="-15" y="-4" width="30" height="8" rx="1" fill="#ef4444"/></svg>
+            <span>Quarter Tila</span>
           </div>
           <div class="shape-card" draggable="true" data-type="triangle">
-            <svg viewBox="0 0 40 40"><polygon points="20,6 34,32 6,32"/><circle cx="20" cy="22" r="3" fill="white"/></svg>
-            <span>Triangle 11/0</span>
+            <svg viewBox="-20 -20 40 40"><polygon points="0,-16 15,12 -15,12" fill="#ef4444"/></svg>
+            <span>Triangle (10/0)</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="cube">
+            <svg viewBox="-20 -20 40 40"><rect x="-12" y="-12" width="24" height="24" fill="#ef4444"/></svg>
+            <span>Cube (3mm)</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="drop">
+            <svg viewBox="-20 -20 40 40"><path d="M 0,-16 C 10,-4 14,8 0,16 C -14,8 -10,-4 0,-16 Z" fill="#ef4444"/></svg>
+            <span>Drop / Magatama</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="bugle">
+            <svg viewBox="-20 -20 40 40"><rect x="-6" y="-18" width="12" height="36" rx="2" fill="#ef4444"/></svg>
+            <span>Bugle (6mm)</span>
           </div>
         </div>
-      </div>
-
-      <!-- Earring / Framing Outlines -->
-      <div>
-        <div class="section-title">Earring / Creation Frame Template</div>
-        <select id="selectFrame">
-          <option value="none">None (Freehand)</option>
-          <option value="triangle">Triangular Earring</option>
-          <option value="circle">Circular / Hoop Earring</option>
-          <option value="teardrop">Teardrop Earring</option>
-
-        </select>
       </div>
 
       <!-- Selected Bead Controls -->
@@ -248,15 +250,15 @@
         </div>
       </div>
 
-      <!-- Shortcuts / Help -->
+      <!-- Shortcuts / Instructions -->
       <div>
-        <div class="section-title">Shortcuts</div>
+        <div class="section-title">Keyboard Shortcuts</div>
         <div class="shortcut-legend">
           • <b>Arrow Keys:</b> Micro-move 1px (Shift + Arrow: 10px)<br>
           • <b>Ctrl + Z / Y:</b> Undo / Redo<br>
           • <b>Ctrl + C / V:</b> Copy / Paste<br>
-          • <b>R:</b> Rotate +15°<br>
-          • <b>Delete / Backspace:</b> Remove bead
+          • <b>R:</b> Quick Rotate (+15°)<br>
+          • <b>Delete:</b> Remove bead
         </div>
       </div>
 
@@ -269,6 +271,19 @@
       <button class="btn" id="btnUndo">Undo</button>
       <button class="btn" id="btnRedo">Redo</button>
       <div style="height: 20px; border-left: 1px solid #d1d5db; margin: 0 4px;"></div>
+      
+      <!-- Template Guide Selector -->
+      <label style="font-size: 0.85rem; font-weight: 500;">Earring / Design Guide:</label>
+      <select id="guideSelect">
+        <option value="none">None</option>
+        <option value="earring-triangle">Triangular Earring</option>
+        <option value="circle">Circular / Mandala</option>
+        <option value="diamond">Diamond Shape</option>
+        <option value="teardrop">Teardrop Earring</option>
+        <option value="square">Square</option>
+      </select>
+
+      <div style="height: 20px; border-left: 1px solid #d1d5db; margin: 0 4px;"></div>
       <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
         <input type="checkbox" id="chkSnap" checked> Snap to Grid (5px)
       </label>
@@ -276,30 +291,39 @@
         <input type="checkbox" id="chkGrid" checked> Show Grid
       </label>
       <div style="flex-grow: 1;"></div>
-      <button class="btn btn-danger" id="btnReset">Reset Design</button>
+      <button class="btn btn-danger" id="btnReset">Reset Canvas</button>
       <button class="btn btn-primary" id="btnExport">Export PNG</button>
     </div>
 
     <div id="canvas-container">
-      <svg id="canvas" width="800" height="600">
+      <svg id="canvas" width="800" height="650">
         <defs>
+          <!-- Grid Pattern -->
           <pattern id="gridPattern" width="20" height="20" patternUnits="userSpaceOnUse">
             <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#f0f0f0" stroke-width="1"/>
           </pattern>
+
+          <!-- Front Shading / Sheen Effect Filter (No Holes) -->
+          <linearGradient id="frontShine" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"/>
+            <stop offset="50%" stop-color="#ffffff" stop-opacity="0.0"/>
+            <stop offset="100%" stop-color="#000000" stop-opacity="0.2"/>
+          </linearGradient>
         </defs>
+
         <rect id="gridBackground" width="100%" height="100%" fill="url(#gridPattern)" />
         
-        <!-- Frame overlay path -->
-        <g id="frameGroup"></g>
+        <!-- Design Guides -->
+        <g id="guidesGroup"></g>
         
-        <!-- Beads -->
+        <!-- Active Beads -->
         <g id="beadsGroup"></g>
       </svg>
     </div>
   </div>
 
   <script>
-    // --- STATE MANAGEMENT ---
+    // STATE MANAGEMENT
     const STATE = {
       beads: [],
       selectedId: null,
@@ -308,8 +332,7 @@
       history: [],
       historyStep: -1,
       gridSize: 5,
-      nextId: 1,
-      currentFrame: 'none'
+      nextId: 1
     };
 
     const presetColors = [
@@ -318,15 +341,15 @@
       '#9ca3af', '#1f2937', '#d97706', '#047857', '#1d4ed8'
     ];
 
-    // --- DOM ELEMENTS ---
+    // DOM ELEMENTS
     const canvas = document.getElementById('canvas');
     const beadsGroup = document.getElementById('beadsGroup');
-    const frameGroup = document.getElementById('frameGroup');
+    const guidesGroup = document.getElementById('guidesGroup');
     const palette = document.getElementById('palette');
     const customColorInput = document.getElementById('customColor');
     const rotateSlider = document.getElementById('rotateSlider');
     const rotValDisplay = document.getElementById('rotVal');
-    const selectFrame = document.getElementById('selectFrame');
+    const guideSelect = document.getElementById('guideSelect');
     
     // Buttons
     const btnUndo = document.getElementById('btnUndo');
@@ -341,7 +364,7 @@
     const chkSnap = document.getElementById('chkSnap');
     const chkGrid = document.getElementById('chkGrid');
 
-    // --- INITIALIZATION ---
+    // INITIALIZATION
     function init() {
       setupPalette();
       setupDragAndDrop();
@@ -374,64 +397,57 @@
       }
     }
 
-    customColorInput.addEventListener('input', (e) => selectColor(e.target.value, null));
-
-    // --- MIYUKI BEAD SVGs ---
-    function getShapePath(type, color) {
-      switch(type) {
-        case 'delica11': // ~1.6mm x 1.3mm proportion
-          return `<rect x="-7" y="-10" width="14" height="20" rx="1.5" fill="${color}" stroke="#00000044" stroke-width="1"/>
-                  <circle cx="0" cy="0" r="3.5" fill="#ffffff" opacity="0.6"/>`;
-        case 'round11': // ~2mm round
-          return `<circle cx="0" cy="0" r="10" fill="${color}" stroke="#00000044" stroke-width="1"/>
-                  <circle cx="0" cy="0" r="3.5" fill="#ffffff" opacity="0.6"/>`;
-        case 'bugle': // Long tubular
-          return `<rect x="-6" y="-18" width="12" height="36" rx="2" fill="${color}" stroke="#00000044" stroke-width="1"/>
-                  <circle cx="0" cy="0" r="3" fill="#ffffff" opacity="0.6"/>`;
-        case 'tila': // Square 2-hole
-          return `<rect x="-14" y="-14" width="28" height="28" rx="2" fill="${color}" stroke="#00000044" stroke-width="1"/>
-                  <circle cx="-6" cy="0" r="3" fill="#ffffff" opacity="0.6"/>
-                  <circle cx="6" cy="0" r="3" fill="#ffffff" opacity="0.6"/>`;
-        case 'drop': // Fringe/drop shape
-          return `<path d="M0,-14 C-8,-2 -10,6 -10,10 A10,10 0 0,0 10,10 C10,6 8,-2 0,-14 Z" fill="${color}" stroke="#00000044" stroke-width="1"/>
-                  <circle cx="0" cy="-6" r="3" fill="#ffffff" opacity="0.6"/>`;
-        case 'triangle': // Triangular seed bead
-          return `<polygon points="0,-12 12,10 -12,10" fill="${color}" stroke="#00000044" stroke-width="1"/>
-                  <circle cx="0" cy="0" r="3" fill="#ffffff" opacity="0.6"/>`;
-        default:
-          return `<circle cx="0" cy="0" r="10" fill="${color}"/>`;
-      }
-    }
-
-    // --- EARRING TEMPLATE FRAMES ---
-    function renderFrame() {
-      frameGroup.innerHTML = '';
-      if (STATE.currentFrame === 'none') return;
-
-      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      path.setAttribute('stroke', '#2563eb');
-      path.setAttribute('stroke-width', '2');
-      path.setAttribute('stroke-dasharray', '6 4');
-      path.setAttribute('fill', 'none');
-      path.setAttribute('opacity', '0.5');
-
-      if (STATE.currentFrame === 'triangle') {
-        path.setAttribute('d', 'M 400 100 L 600 480 L 200 480 Z');
-      } else if (STATE.currentFrame === 'circle') {
-        path.setAttribute('d', 'M 400 100 A 180 180 0 1 0 400 460 A 180 180 0 1 0 400 100');
-      } else if (STATE.currentFrame === 'teardrop') {
-        path.setAttribute('d', 'M 400 100 C 250 280 220 400 310 460 A 120 120 0 0 0 490 460 C 580 400 550 280 400 100 Z');
-      }
-
-      frameGroup.appendChild(path);
-    }
-
-    selectFrame.addEventListener('change', (e) => {
-      STATE.currentFrame = e.target.value;
-      renderFrame();
+    customColorInput.addEventListener('input', (e) => {
+      selectColor(e.target.value, null);
     });
 
-    // --- DRAG & DROP FROM SIDEBAR ---
+    // FRONT ASPECT BEAD PATHS (NO HOLES, SMOOTH SHADING)
+    function getBeadSVG(type, color) {
+      let path = '';
+      switch(type) {
+        case 'delica':
+          path = `<rect x="-12" y="-14" width="24" height="28" rx="3" class="bead-shape" fill="${color}"/>
+                  <rect x="-12" y="-14" width="24" height="28" rx="3" fill="url(#frontShine)"/>`;
+          break;
+        case 'round':
+          path = `<circle cx="0" cy="0" r="14" class="bead-shape" fill="${color}"/>
+                  <circle cx="0" cy="0" r="14" fill="url(#frontShine)"/>`;
+          break;
+        case 'tila':
+          path = `<rect x="-18" y="-18" width="36" height="36" rx="2" class="bead-shape" fill="${color}"/>
+                  <rect x="-18" y="-18" width="36" height="36" rx="2" fill="url(#frontShine)"/>`;
+          break;
+        case 'half-tila':
+          path = `<rect x="-18" y="-9" width="36" height="18" rx="2" class="bead-shape" fill="${color}"/>
+                  <rect x="-18" y="-9" width="36" height="18" rx="2" fill="url(#frontShine)"/>`;
+          break;
+        case 'quarter-tila':
+          path = `<rect x="-18" y="-5" width="36" height="10" rx="1.5" class="bead-shape" fill="${color}"/>
+                  <rect x="-18" y="-5" width="36" height="10" rx="1.5" fill="url(#frontShine)"/>`;
+          break;
+        case 'triangle':
+          path = `<polygon points="0,-18 17,14 -17,14" class="bead-shape" fill="${color}"/>
+                  <polygon points="0,-18 17,14 -17,14" fill="url(#frontShine)"/>`;
+          break;
+        case 'cube':
+          path = `<rect x="-14" y="-14" width="28" height="28" class="bead-shape" fill="${color}"/>
+                  <rect x="-14" y="-14" width="28" height="28" fill="url(#frontShine)"/>`;
+          break;
+        case 'drop':
+          path = `<path d="M 0,-18 C 12,-5 16,10 0,18 C -16,10 -12,-5 0,-18 Z" class="bead-shape" fill="${color}"/>
+                  <path d="M 0,-18 C 12,-5 16,10 0,18 C -16,10 -12,-5 0,-18 Z" fill="url(#frontShine)"/>`;
+          break;
+        case 'bugle':
+          path = `<rect x="-7" y="-22" width="14" height="44" rx="2" class="bead-shape" fill="${color}"/>
+                  <rect x="-7" y="-22" width="14" height="44" rx="2" fill="url(#frontShine)"/>`;
+          break;
+        default:
+          path = `<circle cx="0" cy="0" r="12" class="bead-shape" fill="${color}"/>`;
+      }
+      return path;
+    }
+
+    // DRAG & DROP
     function setupDragAndDrop() {
       document.querySelectorAll('.shape-card').forEach(card => {
         card.addEventListener('dragstart', (e) => {
@@ -474,7 +490,7 @@
       saveState();
     }
 
-    // --- RENDER FUNCTION ---
+    // RENDER CANVAS
     function render() {
       beadsGroup.innerHTML = '';
 
@@ -484,7 +500,7 @@
         g.setAttribute('transform', `translate(${bead.x}, ${bead.y}) rotate(${bead.rotation})`);
         g.setAttribute('data-id', bead.id);
 
-        g.innerHTML = getShapePath(bead.type, bead.color);
+        g.innerHTML = getBeadSVG(bead.type, bead.color);
 
         g.addEventListener('mousedown', (e) => startDraggingBead(e, bead.id));
 
@@ -494,7 +510,50 @@
       updateUI();
     }
 
-    // --- BEAD DRAGGING WITHIN CANVAS ---
+    // DESIGN GUIDES
+    guideSelect.addEventListener('change', (e) => {
+      renderGuides(e.target.value);
+    });
+
+    function renderGuides(type) {
+      guidesGroup.innerHTML = '';
+      const cx = 400;
+      const cy = 325;
+
+      if (type === 'earring-triangle') {
+        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        polygon.setAttribute('points', `${cx},${cy - 200} ${cx + 180},${cy + 150} ${cx - 180},${cy + 150}`);
+        polygon.setAttribute('class', 'guide-shape');
+        guidesGroup.appendChild(polygon);
+      } else if (type === 'circle') {
+        const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+        circle.setAttribute('cx', cx);
+        circle.setAttribute('cy', cy);
+        circle.setAttribute('r', 180);
+        circle.setAttribute('class', 'guide-shape');
+        guidesGroup.appendChild(circle);
+      } else if (type === 'diamond') {
+        const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+        polygon.setAttribute('points', `${cx},${cy - 200} ${cx + 160},${cy} ${cx},${cy + 200} ${cx - 160},${cy}`);
+        polygon.setAttribute('class', 'guide-shape');
+        guidesGroup.appendChild(polygon);
+      } else if (type === 'teardrop') {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('d', `M ${cx},${cy - 220} C ${cx + 200},${cy - 20} ${cx + 180},${cy + 180} ${cx},${cy + 180} C ${cx - 180},${cy + 180} ${cx - 200},${cy - 20} ${cx},${cy - 220} Z`);
+        path.setAttribute('class', 'guide-shape');
+        guidesGroup.appendChild(path);
+      } else if (type === 'square') {
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', cx - 150);
+        rect.setAttribute('y', cy - 150);
+        rect.setAttribute('width', 300);
+        rect.setAttribute('height', 300);
+        rect.setAttribute('class', 'guide-shape');
+        guidesGroup.appendChild(rect);
+      }
+    }
+
+    // INTERNAL BEAD DRAGGING
     let isDragging = false;
     let dragOffset = { x: 0, y: 0 };
 
@@ -505,13 +564,10 @@
 
       isDragging = true;
       const bead = STATE.beads.find(b => b.id === id);
-      
       const rect = canvas.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
 
-      dragOffset.x = mouseX - bead.x;
-      dragOffset.y = mouseY - bead.y;
+      dragOffset.x = (e.clientX - rect.left) - bead.x;
+      dragOffset.y = (e.clientY - rect.top) - bead.y;
 
       window.addEventListener('mousemove', onDragBead);
       window.addEventListener('mouseup', stopDraggingBead);
@@ -533,7 +589,7 @@
 
       bead.x = newX;
       bead.y = newY;
-      
+
       const el = beadsGroup.querySelector(`[data-id="${bead.id}"]`);
       if (el) {
         el.setAttribute('transform', `translate(${bead.x}, ${bead.y}) rotate(${bead.rotation})`);
@@ -556,7 +612,7 @@
       }
     });
 
-    // --- UI CONTROLS & LISTENERS ---
+    // UI UPDATES & ACTIONS
     function updateUI() {
       const selectedBead = STATE.beads.find(b => b.id === STATE.selectedId);
       const hasSelection = !!selectedBead;
@@ -626,7 +682,7 @@
       btnUndo.addEventListener('click', undo);
       btnRedo.addEventListener('click', redo);
       btnReset.addEventListener('click', () => {
-        if (confirm("Are you sure you want to reset your bead design?")) {
+        if (confirm("Clear all beads from canvas?")) {
           STATE.beads = [];
           STATE.selectedId = null;
           render();
@@ -638,7 +694,6 @@
       window.addEventListener('keydown', handleKeydown);
     }
 
-    // --- ACTIONS ---
     function copyBead() {
       const bead = STATE.beads.find(b => b.id === STATE.selectedId);
       if (bead) {
@@ -652,8 +707,8 @@
         const newBead = {
           ...STATE.clipboard,
           id: STATE.nextId++,
-          x: STATE.clipboard.x + 15,
-          y: STATE.clipboard.y + 15
+          x: STATE.clipboard.x + 10,
+          y: STATE.clipboard.y + 10
         };
         STATE.beads.push(newBead);
         STATE.selectedId = newBead.id;
@@ -671,10 +726,10 @@
       }
     }
 
+    // KEYBOARD SHORTCUTS & MICRO MOVEMENTS
     function handleKeydown(e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
 
-      // Undo / Redo Shortcuts
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         if (e.shiftKey) redo(); else undo();
         e.preventDefault();
@@ -683,7 +738,6 @@
         e.preventDefault();
       }
 
-      // Copy / Paste Shortcuts
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
         copyBead();
         e.preventDefault();
@@ -693,13 +747,11 @@
         e.preventDefault();
       }
 
-      // Delete
       if (e.key === 'Delete' || e.key === 'Backspace') {
         deleteBead();
         e.preventDefault();
       }
 
-      // Rotate 'R'
       if (e.key.toLowerCase() === 'r' && STATE.selectedId !== null) {
         const bead = STATE.beads.find(b => b.id === STATE.selectedId);
         if (bead) {
@@ -709,7 +761,7 @@
         }
       }
 
-      // Micro-movement with Keyboard Arrows
+      // Micro Movement
       if (STATE.selectedId !== null && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
         const bead = STATE.beads.find(b => b.id === STATE.selectedId);
         const step = e.shiftKey ? 10 : 1;
@@ -725,7 +777,7 @@
       }
     }
 
-    // --- UNDO / REDO ---
+    // HISTORY (UNDO / REDO)
     function saveState() {
       STATE.history = STATE.history.slice(0, STATE.historyStep + 1);
       STATE.history.push(JSON.stringify(STATE.beads));
@@ -749,7 +801,7 @@
       }
     }
 
-    // --- EXPORT PNG ---
+    // EXPORT TO PNG
     function exportPNG() {
       const currentSelected = STATE.selectedId;
       STATE.selectedId = null;
@@ -770,7 +822,6 @@
 
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(0, 0, outputCanvas.width, outputCanvas.height);
-
         ctx.drawImage(img, 0, 0);
         URL.revokeObjectURL(url);
 
