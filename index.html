@@ -47,7 +47,7 @@
       margin-bottom: 6px;
     }
 
-    select, input[type="range"] { width: 100%; }
+    select, input[type="range"], input[type="number"] { width: 100%; }
     
     .shapes-grid {
       display: grid;
@@ -148,6 +148,21 @@
       border-radius: 6px;
       border: 1px solid #e5e7eb;
     }
+
+    .angle-control {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      background: #f9fafb;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+    }
+    .angle-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
   </style>
 </head>
 <body>
@@ -180,9 +195,9 @@
       <div>
         <div class="section-title">Palette Color</div>
         <div class="colors-grid" id="palette"></div>
-        <div style="display:flex; justify-space-between; margin-top:6px; font-size:0.75rem;">
+        <div style="display:flex; justify-content:space-between; margin-top:6px; font-size:0.75rem; align-items:center;">
           <label for="customColor">Custom:</label>
-          <input type="color" id="customColor" value="#ec4899" style="cursor:pointer; border:none; background:none;">
+          <input type="color" id="customColor" value="#ec4899" style="cursor:pointer; border:none; background:none; width:32px; height:24px;">
         </div>
       </div>
 
@@ -272,15 +287,21 @@
         </div>
       </div>
 
-      <!-- Controls -->
+      <!-- Controls & Custom Angle Selector -->
       <div>
         <div class="section-title">Selected Orientation & Tools</div>
-        <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:4px; margin-bottom:8px;">
-          <button class="btn" id="btnOrient0">0°</button>
-          <button class="btn" id="btnOrient30">30°</button>
-          <button class="btn" id="btnOrient45">45°</button>
-          <button class="btn" id="btnOrient90">90°</button>
+        
+        <div class="angle-control" style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600;">
+            <span>Rotation Angle:</span>
+            <span><span id="angleValue">0</span>°</span>
+          </div>
+          <div class="angle-row">
+            <input type="range" id="angleSlider" min="0" max="360" value="0" step="1">
+            <input type="number" id="angleInput" min="0" max="360" value="0" style="width: 55px; padding: 4px; border-radius: 4px; border: 1px solid #d1d5db; font-size: 0.75rem;">
+          </div>
         </div>
+
         <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px;">
           <button class="btn" id="btnBringForward">Layer Up</button>
           <button class="btn" id="btnSendBackward">Layer Down</button>
@@ -297,7 +318,7 @@
           • <b>Shift + Click:</b> Multi-select individual beads<br>
           • <b>Arrows:</b> Fine nudge 1px (Shift + Arrow: 10px)<br>
           • <b>Ctrl + C / V:</b> Copy & Directional Paste<br>
-          • <b>R:</b> Cycle rotation (0° / 30° / 45° / 90°)
+          • <b>R:</b> Rotate selection +15°
         </div>
       </div>
 
@@ -368,6 +389,10 @@
     const chkSnap = document.getElementById('chkSnap');
     const chkFineSnap = document.getElementById('chkFineSnap');
 
+    const angleSlider = document.getElementById('angleSlider');
+    const angleInput = document.getElementById('angleInput');
+    const angleValue = document.getElementById('angleValue');
+
     function init() {
       setupPalette();
       setupDragAndDrop();
@@ -389,7 +414,7 @@
     function selectColor(color, element) {
       STATE.currentColor = color;
       document.querySelectorAll('.color-dot').forEach(d => d.classList.remove('active'));
-      if(element) element.classList.add('active');
+      if (element) element.classList.add('active');
       
       if (STATE.selectedIds.length > 0) {
         STATE.beads.forEach(b => {
@@ -432,7 +457,8 @@
         case 'peanut':
           return `<path class="bead-body" d="M -6,-10 A 6,6 0 0,1 6,-10 A 4,4 0 0,1 6,0 A 6,6 0 0,1 6,10 A 6,6 0 0,1 -6,10 A 4,4 0 0,1 -6,0 A 6,6 0 0,1 -6,-10 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
         case 'donut':
-          return `<path class="bead-body" fill-rule="evenodd" d="M 0,-12 A 12,12 0 1,0 0.01,-12 Z M 0,-4 A 4,4 0 1,1 0.01,-4 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<circle class="bead-body" cx="0" cy="0" r="11" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+                  <circle cx="0" cy="0" r="4" fill="#ffffff" stroke="#00000033" stroke-width="0.5"/>`;
         default:
           return `<rect class="bead-body" x="-8" y="-7" width="16" height="14" fill="${color}"/>`;
       }
@@ -501,6 +527,7 @@
         const newBead = { id: STATE.nextId++, type, x, y, color: STATE.currentColor, rotation: 0 };
         STATE.beads.push(newBead);
         STATE.selectedIds = [newBead.id];
+        syncAngleControls();
         render();
         saveState();
       });
@@ -538,8 +565,10 @@
         } else {
           STATE.selectedIds = [id];
         }
-        render();
       }
+      
+      syncAngleControls();
+      render();
 
       isDraggingBeads = true;
       const rect = canvas.getBoundingClientRect();
@@ -558,6 +587,7 @@
     canvas.addEventListener('mousedown', (e) => {
       if (e.target.id === 'canvas' || e.target.id === 'gridBackground') {
         if (!e.shiftKey) STATE.selectedIds = [];
+        syncAngleControls();
         render();
 
         isBoxSelecting = true;
@@ -620,6 +650,7 @@
           b.x >= x && b.x <= x + width && b.y >= y && b.y <= y + height
         ).map(b => b.id);
 
+        syncAngleControls();
         render();
       }
     }
@@ -638,10 +669,11 @@
     }
 
     function setupEventListeners() {
-      document.getElementById('btnOrient0').addEventListener('click', () => setOrientation(0));
-      document.getElementById('btnOrient30').addEventListener('click', () => setOrientation(30));
-      document.getElementById('btnOrient45').addEventListener('click', () => setOrientation(45));
-      document.getElementById('btnOrient90').addEventListener('click', () => setOrientation(90));
+      angleSlider.addEventListener('input', (e) => setOrientation(parseInt(e.target.value)));
+      angleInput.addEventListener('change', (e) => {
+        let val = Math.min(360, Math.max(0, parseInt(e.target.value) || 0));
+        setOrientation(val);
+      });
 
       document.getElementById('btnCopy').addEventListener('click', copyBeads);
       document.getElementById('btnPaste').addEventListener('click', pasteBeads);
@@ -665,6 +697,7 @@
         if (confirm("Clear design?")) {
           STATE.beads = [];
           STATE.selectedIds = [];
+          syncAngleControls();
           render();
           saveState();
         }
@@ -674,10 +707,27 @@
       window.addEventListener('keydown', handleKeydown);
     }
 
+    function syncAngleControls() {
+      if (STATE.selectedIds.length > 0) {
+        const firstSelected = STATE.beads.find(b => b.id === STATE.selectedIds[0]);
+        if (firstSelected) {
+          const deg = ((firstSelected.rotation % 360) + 360) % 360;
+          angleSlider.value = deg;
+          angleInput.value = deg;
+          angleValue.textContent = deg;
+        }
+      }
+    }
+
     function setOrientation(angle) {
+      const normalizedAngle = ((angle % 360) + 360) % 360;
+      angleSlider.value = normalizedAngle;
+      angleInput.value = normalizedAngle;
+      angleValue.textContent = normalizedAngle;
+
       if (STATE.selectedIds.length > 0) {
         STATE.beads.forEach(b => {
-          if (STATE.selectedIds.includes(b.id)) b.rotation = angle;
+          if (STATE.selectedIds.includes(b.id)) b.rotation = normalizedAngle;
         });
         render();
         saveState();
@@ -696,19 +746,11 @@
         const newIds = [];
 
         STATE.clipboard.forEach(b => {
-          let offsetX = 0;
-          let offsetY = 0;
-
-          const normRotation = ((b.rotation % 360) + 360) % 360;
-
-          if (normRotation === 90 || normRotation === 270) {
-            offsetY = -16 * STATE.pasteOffsetCount;
-          } else if (normRotation === 30 || normRotation === 45) {
-            offsetX = 12 * STATE.pasteOffsetCount;
-            offsetY = 12 * STATE.pasteOffsetCount;
-          } else {
-            offsetX = 16 * STATE.pasteOffsetCount;
-          }
+          const rad = (b.rotation * Math.PI) / 180;
+          const baseStep = 16 * STATE.pasteOffsetCount;
+          
+          const offsetX = Math.round(Math.cos(rad) * baseStep);
+          const offsetY = Math.round(Math.sin(rad) * baseStep);
 
           const newBead = {
             ...b,
@@ -722,6 +764,7 @@
 
         STATE.selectedIds = newIds;
         STATE.pasteOffsetCount++;
+        syncAngleControls();
         render();
         saveState();
       }
@@ -731,6 +774,7 @@
       if (STATE.selectedIds.length > 0) {
         STATE.beads = STATE.beads.filter(b => !STATE.selectedIds.includes(b.id));
         STATE.selectedIds = [];
+        syncAngleControls();
         render();
         saveState();
       }
@@ -752,10 +796,9 @@
       if (e.key === 'Delete' || e.key === 'Backspace') { deleteBeads(); e.preventDefault(); }
 
       if (e.key.toLowerCase() === 'r') {
-        const current = STATE.beads.find(b => STATE.selectedIds.includes(b.id))?.rotation || 0;
-        const angles = [0, 30, 45, 90];
-        const nextAngle = angles[(angles.indexOf(current) + 1) % angles.length];
-        setOrientation(nextAngle);
+        const first = STATE.beads.find(b => STATE.selectedIds.includes(b.id));
+        const current = first ? first.rotation : 0;
+        setOrientation((current + 15) % 360);
       }
 
       if (STATE.selectedIds.length > 0 && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
@@ -790,6 +833,7 @@
         STATE.historyStep--;
         STATE.beads = JSON.parse(STATE.history[STATE.historyStep]);
         syncNextId();
+        syncAngleControls();
         render();
       }
     }
@@ -799,6 +843,7 @@
         STATE.historyStep++;
         STATE.beads = JSON.parse(STATE.history[STATE.historyStep]);
         syncNextId();
+        syncAngleControls();
         render();
       }
     }
@@ -832,6 +877,7 @@
         a.click();
 
         STATE.selectedIds = savedSelected;
+        syncAngleControls();
         render();
       };
 
