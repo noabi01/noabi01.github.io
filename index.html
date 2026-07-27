@@ -286,7 +286,7 @@
           <button class="btn" id="btnBringForward">Layer Up</button>
           <button class="btn" id="btnSendBackward">Layer Down</button>
           <button class="btn" id="btnCopy">Copy Bulk</button>
-          <button class="btn" id="btnPaste">Paste Multi</button>
+          <button class="btn" id="btnPaste">Paste Beside</button>
         </div>
         <button class="btn btn-danger" id="btnDelete" style="width: 100%; margin-top: 6px;">Delete Selected</button>
       </div>
@@ -297,7 +297,7 @@
           • <b>Drag Selection Box:</b> Bulk select multiple beads<br>
           • <b>Shift + Click:</b> Multi-select individual beads<br>
           • <b>Arrows:</b> Fine nudge 1px (Shift + Arrow: 10px)<br>
-          • <b>Ctrl + C / V:</b> Bulk Copy & Repeated Paste<br>
+          • <b>Ctrl + C / V:</b> Copy & Directional Paste<br>
           • <b>R:</b> Rotate 0° / 90°
         </div>
       </div>
@@ -418,8 +418,6 @@
           return `<rect class="bead-body" x="-14" y="-4" width="28" height="8" rx="1.5" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
         case 'round11':
           return `<ellipse class="bead-body" cx="0" cy="0" rx="8" ry="7" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
-        
-        // New bead shapes
         case 'oval':
           return `<ellipse class="bead-body" cx="0" cy="0" rx="16" ry="8" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
         case 'rondelle':
@@ -436,7 +434,6 @@
           return `<path class="bead-body" d="M -6,-10 A 6,6 0 0,1 6,-10 A 4,4 0 0,1 6,0 A 6,6 0 0,1 6,10 A 6,6 0 0,1 -6,10 A 4,4 0 0,1 -6,0 A 6,6 0 0,1 -6,-10 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
         case 'donut':
           return `<path class="bead-body" fill-rule="evenodd" d="M 0,-12 A 12,12 0 1,0 0,12 A 12,12 0 1,0 0,-12 Z M 0,-4 A 4,4 0 1,1 0,4 A 4,4 0 1,1 0,-4 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
-          
         default:
           return `<rect class="bead-body" x="-8" y="-7" width="16" height="14" fill="${color}"/>`;
       }
@@ -593,7 +590,7 @@
               nx = Math.round(nx / STATE.gridX) * STATE.gridX;
               ny = Math.round(ny / STATE.gridY) * STATE.gridY;
             } else if (chkFineSnap.checked) {
-              nx = Math.round(nx * 2) / 2; // Precise sub-pixel alignment for trackpads
+              nx = Math.round(nx * 2) / 2;
               ny = Math.round(ny * 2) / 2;
             }
 
@@ -689,22 +686,31 @@
     function pasteBeads() {
       if (STATE.clipboard.length > 0) {
         const newIds = [];
-        const offsetStepX = STATE.gridX * STATE.pasteOffsetCount;
-        const offsetStepY = STATE.gridY * STATE.pasteOffsetCount;
 
         STATE.clipboard.forEach(b => {
+          let offsetX = 0;
+          let offsetY = 0;
+
+          // Horizontal/Standard (0deg) -> Paste to the LEFT
+          // Vertical (90deg) -> Paste ABOVE
+          if (b.rotation === 90) {
+            offsetY = -STATE.gridY * STATE.pasteOffsetCount;
+          } else {
+            offsetX = -STATE.gridX * STATE.pasteOffsetCount;
+          }
+
           const newBead = {
             ...b,
             id: STATE.nextId++,
-            x: b.x + offsetStepX,
-            y: b.y + offsetStepY
+            x: b.x + offsetX,
+            y: b.y + offsetY
           };
           STATE.beads.push(newBead);
           newIds.push(newBead.id);
         });
 
         STATE.selectedIds = newIds;
-        STATE.pasteOffsetCount++; // Allows infinite repetitive pastes!
+        STATE.pasteOffsetCount++;
         render();
         saveState();
       }
@@ -761,10 +767,16 @@
       STATE.historyStep++;
     }
 
+    function syncNextId() {
+      const maxId = STATE.beads.reduce((max, b) => Math.max(max, b.id), 0);
+      STATE.nextId = Math.max(STATE.nextId, maxId + 1);
+    }
+
     function undo() {
       if (STATE.historyStep > 0) {
         STATE.historyStep--;
         STATE.beads = JSON.parse(STATE.history[STATE.historyStep]);
+        syncNextId();
         render();
       }
     }
@@ -773,6 +785,7 @@
       if (STATE.historyStep < STATE.history.length - 1) {
         STATE.historyStep++;
         STATE.beads = JSON.parse(STATE.history[STATE.historyStep]);
+        syncNextId();
         render();
       }
     }
