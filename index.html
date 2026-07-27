@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Miyuki Bead Pattern Designer</title>
+  <title>Miyuki & Gemstone Pattern Designer</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     body {
@@ -16,7 +16,7 @@
     }
     
     #sidebar {
-      width: 320px;
+      width: 340px;
       background-color: #ffffff;
       border-right: 1px solid #e5e7eb;
       display: flex;
@@ -66,8 +66,8 @@
       background: white;
     }
     .shape-card:hover { border-color: #2563eb; background-color: #eff6ff; }
-    .shape-card svg { width: 40px; height: 32px; }
-    .shape-card span { font-size: 0.72rem; margin-top: 4px; font-weight: 500; text-align: center; }
+    .shape-card svg { width: 44px; height: 36px; }
+    .shape-card span { font-size: 0.7rem; margin-top: 4px; font-weight: 500; text-align: center; }
 
     .colors-grid {
       display: grid;
@@ -154,7 +154,7 @@
   <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="header">
-      <h1>Miyuki Designer</h1>
+      <h1>Bead Pattern Designer</h1>
     </div>
 
     <div class="scroll-container">
@@ -175,7 +175,7 @@
         </div>
       </div>
 
-      <!-- Bead Palette -->
+      <!-- Palette -->
       <div>
         <div class="section-title">Palette Color</div>
         <div class="colors-grid" id="palette"></div>
@@ -185,46 +185,76 @@
         </div>
       </div>
 
-      <!-- Miyuki Bead Shapes -->
+      <!-- Bead Shapes Grid -->
       <div>
         <div class="section-title">Bead Types & Shapes</div>
         <div class="shapes-grid">
+          <!-- Miyuki standard -->
           <div class="shape-card" draggable="true" data-type="delica11">
-            <svg viewBox="-12 -10 24 20">
-              <rect x="-8" y="-7" width="16" height="14" rx="2.5" fill="#f97316" stroke="#c2410c" stroke-width="0.8"/>
-              <rect x="-6" y="-5" width="12" height="10" rx="1.5" fill="#ffffff" opacity="0.3"/>
-            </svg>
+            <svg viewBox="-12 -12 24 24"><rect x="-8" y="-7" width="16" height="14" rx="2.5" fill="#f97316" stroke="#c2410c"/></svg>
             <span>Delica 11/0</span>
           </div>
           <div class="shape-card" draggable="true" data-type="tila">
-            <svg viewBox="-16 -16 32 32">
-              <rect x="-14" y="-14" width="28" height="28" rx="2" fill="#3b82f6" stroke="#1d4ed8"/>
-            </svg>
+            <svg viewBox="-16 -16 32 32"><rect x="-14" y="-14" width="28" height="28" rx="2" fill="#3b82f6" stroke="#1d4ed8"/></svg>
             <span>Full Tila</span>
           </div>
-          <div class="shape-card" draggable="true" data-type="halftila">
-            <svg viewBox="-16 -10 32 20">
-              <rect x="-14" y="-7" width="28" height="14" rx="2" fill="#3b82f6" stroke="#1d4ed8"/>
-            </svg>
-            <span>Half Tila</span>
+
+          <!-- Gemstone Shapes from Image -->
+          <div class="shape-card" draggable="true" data-type="round">
+            <svg viewBox="-12 -12 24 24"><circle cx="0" cy="0" r="10" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Round</span>
           </div>
-          <div class="shape-card" draggable="true" data-type="quartertila">
-            <svg viewBox="-16 -6 32 12">
-              <rect x="-14" y="-4" width="28" height="8" rx="1.5" fill="#3b82f6" stroke="#1d4ed8"/>
-            </svg>
-            <span>Quarter Tila</span>
+          <div class="shape-card" draggable="true" data-type="oval">
+            <svg viewBox="-14 -10 28 20"><ellipse cx="0" cy="0" rx="12" ry="7" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Oval</span>
           </div>
-          <div class="shape-card" draggable="true" data-type="round11">
-            <svg viewBox="-12 -10 24 20">
-              <ellipse cx="0" cy="0" rx="8" ry="7" fill="#10b981" stroke="#047857"/>
-            </svg>
-            <span>Round 11/0</span>
+          <div class="shape-card" draggable="true" data-type="rondelle">
+            <svg viewBox="-12 -10 24 20"><path d="M -10,0 C -10,-7 10,-7 10,0 C 10,7 -10,7 -10,0 Z" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Rondelle</span>
           </div>
-          <div class="shape-card" draggable="true" data-type="drop">
-            <svg viewBox="-12 -12 24 24">
-              <path d="M 0,-9 C 6,-2 6,7 0,9 C -6,7 -6,-2 0,-9 Z" fill="#a855f7" stroke="#7e22ce"/>
-            </svg>
-            <span>Drop Bead</span>
+          <div class="shape-card" draggable="true" data-type="heishi">
+            <svg viewBox="-12 -8 24 16"><rect x="-10" y="-4" width="20" height="8" rx="1" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Heishi</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="flat-diamond">
+            <svg viewBox="-14 -10 28 20"><polygon points="0,-8 12,0 0,8 -12,0" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Flat Diamond</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="flat-triangle">
+            <svg viewBox="-12 -10 24 20"><polygon points="0,-8 10,7 -10,7" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Flat Triangle</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="teardrop">
+            <svg viewBox="-12 -12 24 24"><path d="M 0,-10 C 8,-2 8,8 0,10 C -8,8 -8,-2 0,-10 Z" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Teardrop</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="saucer">
+            <svg viewBox="-12 -12 24 24"><polygon points="0,-10 10,0 0,10 -10,0" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Saucer</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="cube">
+            <svg viewBox="-12 -12 24 24"><rect x="-8" y="-8" width="16" height="16" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Cube</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="coin">
+            <svg viewBox="-12 -12 24 24"><ellipse cx="0" cy="0" rx="10" ry="10" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Coin</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="briolette">
+            <svg viewBox="-12 -12 24 24"><path d="M 0,-10 L 8,2 C 8,8 -8,8 -8,2 Z" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Briolette</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="marquise">
+            <svg viewBox="-14 -10 28 20"><path d="M -12,0 Q 0,-9 12,0 Q 0,9 -12,0 Z" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Marquise</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="round-tube">
+            <svg viewBox="-14 -8 28 16"><rect x="-12" y="-4" width="24" height="8" rx="4" fill="#06b6d4" stroke="#0891b2"/></svg>
+            <span>Round Tube</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="donut">
+            <svg viewBox="-12 -12 24 24"><circle cx="0" cy="0" r="10" fill="#06b6d4" stroke="#0891b2"/><circle cx="0" cy="0" r="4" fill="#ffffff"/></svg>
+            <span>Donut</span>
           </div>
         </div>
       </div>
@@ -352,42 +382,104 @@
 
     customColorInput.addEventListener('input', (e) => selectColor(e.target.value, null));
 
+    // Generates SVG graphics for each bead type based on exact proportional proportions
     function getBeadSVG(type, color) {
+      const stroke = "#00000033";
       switch(type) {
+        // --- MIYUKI BEADS ---
         case 'delica11':
           return `
-            <rect class="bead-body" x="-8" y="-7" width="16" height="14" rx="2.5" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+            <rect class="bead-body" x="-8" y="-7" width="16" height="14" rx="2.5" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
             <rect x="-6" y="-5" width="12" height="10" rx="1.5" fill="#ffffff" opacity="0.25"/>
             <circle cx="0" cy="0" r="2" fill="#000000" opacity="0.12"/>
           `;
         case 'tila':
           return `
-            <rect class="bead-body" x="-14" y="-14" width="28" height="28" rx="2" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+            <rect class="bead-body" x="-14" y="-14" width="28" height="28" rx="2" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
             <circle cx="-6" cy="0" r="2" fill="#000000" opacity="0.2"/>
             <circle cx="6" cy="0" r="2" fill="#000000" opacity="0.2"/>
           `;
-        case 'halftila':
+
+        // --- GEMSTONE BEADS (FROM IMAGE) ---
+        case 'round':
           return `
-            <rect class="bead-body" x="-14" y="-7" width="28" height="14" rx="2" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
-            <circle cx="-6" cy="0" r="1.5" fill="#000000" opacity="0.2"/>
-            <circle cx="6" cy="0" r="1.5" fill="#000000" opacity="0.2"/>
+            <circle class="bead-body" cx="0" cy="0" r="10" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <circle cx="-3" cy="-3" r="3" fill="#ffffff" opacity="0.3"/>
+            <circle cx="0" cy="0" r="1.5" fill="#000000" opacity="0.2"/>
           `;
-        case 'quartertila':
+        case 'oval':
           return `
-            <rect class="bead-body" x="-14" y="-4" width="28" height="8" rx="1.5" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
-            <circle cx="-6" cy="0" r="1.2" fill="#000000" opacity="0.2"/>
-            <circle cx="6" cy="0" r="1.2" fill="#000000" opacity="0.2"/>
+            <ellipse class="bead-body" cx="0" cy="0" rx="14" ry="8" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <ellipse cx="-4" cy="-2" rx="4" ry="2" fill="#ffffff" opacity="0.3"/>
+            <line x1="-12" y1="0" x2="12" y2="0" stroke="#000000" stroke-width="1" opacity="0.2" stroke-dasharray="2 2"/>
           `;
-        case 'round11':
+        case 'rondelle':
           return `
-            <ellipse class="bead-body" cx="0" cy="0" rx="8" ry="7" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
-            <ellipse cx="-2" cy="-2" rx="3" ry="2" fill="#ffffff" opacity="0.3"/>
+            <path class="bead-body" d="M -12,0 C -12,-8 12,-8 12,0 C 12,8 -12,8 -12,0 Z" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <ellipse cx="0" cy="-2" rx="6" ry="2" fill="#ffffff" opacity="0.25"/>
+            <line x1="-10" y1="0" x2="10" y2="0" stroke="#000000" stroke-width="1" opacity="0.2"/>
           `;
-        case 'drop':
+        case 'heishi':
           return `
-            <path class="bead-body" d="M 0,-10 C 7,-2 7,8 0,10 C -7,8 -7,-2 0,-10 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
-            <circle cx="0" cy="-5" r="1.8" fill="#ffffff" opacity="0.6"/>
+            <rect class="bead-body" x="-12" y="-4" width="24" height="8" rx="1" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <line x1="-10" y1="0" x2="10" y2="0" stroke="#000000" stroke-width="1" opacity="0.2"/>
           `;
+        case 'flat-diamond':
+          return `
+            <polygon class="bead-body" points="0,-10 14,0 0,10 -14,0" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <polygon points="0,-6 8,0 0,6 -8,0" fill="#ffffff" opacity="0.2"/>
+            <circle cx="0" cy="0" r="1.5" fill="#000000" opacity="0.25"/>
+          `;
+        case 'flat-triangle':
+          return `
+            <polygon class="bead-body" points="0,-10 12,8 -12,8" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <polygon points="0,-5 6,4 -6,4" fill="#ffffff" opacity="0.2"/>
+            <circle cx="0" cy="2" r="1.5" fill="#000000" opacity="0.25"/>
+          `;
+        case 'teardrop':
+        case 'briolette':
+          return `
+            <path class="bead-body" d="M 0,-11 C 9,-2 9,9 0,11 C -9,9 -9,-2 0,-11 Z" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <ellipse cx="-2" cy="-2" rx="3" ry="5" fill="#ffffff" opacity="0.3"/>
+            <circle cx="0" cy="-6" r="1.5" fill="#000000" opacity="0.25"/>
+          `;
+        case 'saucer':
+          return `
+            <polygon class="bead-body" points="0,-11 12,0 0,11 -12,0" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <line x1="-10" y1="0" x2="10" y2="0" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+            <circle cx="0" cy="0" r="1.5" fill="#000000" opacity="0.25"/>
+          `;
+        case 'cube':
+          return `
+            <rect class="bead-body" x="-9" y="-9" width="18" height="18" rx="1" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <rect x="-6" y="-6" width="12" height="12" fill="#ffffff" opacity="0.2"/>
+            <circle cx="0" cy="0" r="1.5" fill="#000000" opacity="0.25"/>
+          `;
+        case 'coin':
+          return `
+            <circle class="bead-body" cx="0" cy="0" r="11" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <circle cx="0" cy="0" r="8" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+            <circle cx="0" cy="0" r="1.5" fill="#000000" opacity="0.25"/>
+          `;
+        case 'marquise':
+          return `
+            <path class="bead-body" d="M -14,0 Q 0,-10 14,0 Q 0,10 -14,0 Z" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <path d="M -8,0 Q 0,-5 8,0 Q 0,5 -8,0 Z" fill="#ffffff" opacity="0.25"/>
+            <line x1="-12" y1="0" x2="12" y2="0" stroke="#000000" stroke-width="1" opacity="0.2"/>
+          `;
+        case 'round-tube':
+          return `
+            <rect class="bead-body" x="-14" y="-5" width="28" height="10" rx="4" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <line x1="-12" y1="-2" x2="12" y2="-2" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+            <line x1="-12" y1="0" x2="12" y2="0" stroke="#000000" stroke-width="1" opacity="0.2"/>
+          `;
+        case 'donut':
+          return `
+            <circle class="bead-body" cx="0" cy="0" r="11" fill="${color}" stroke="${stroke}" stroke-width="0.8"/>
+            <circle cx="0" cy="0" r="4.5" fill="#e5e7eb" stroke="${stroke}" stroke-width="0.5"/>
+            <circle cx="-3" cy="-3" r="2" fill="#ffffff" opacity="0.3"/>
+          `;
+
         default:
           return `<rect class="bead-body" x="-8" y="-7" width="16" height="14" fill="${color}"/>`;
       }
@@ -742,7 +834,7 @@
         URL.revokeObjectURL(url);
 
         const a = document.createElement('a');
-        a.download = 'miyuki-bead-pattern.png';
+        a.download = 'bead-pattern.png';
         a.href = outputCanvas.toDataURL('image/png');
         a.click();
 
