@@ -16,7 +16,7 @@
     
     /* Sidebar Layout */
     #sidebar {
-      width: 320px;
+      width: 330px;
       background-color: #ffffff;
       border-right: 1px solid #e5e7eb;
       display: flex;
@@ -29,7 +29,7 @@
       background-color: #2563eb;
       color: white;
     }
-    .header h1 { font-size: 1.25rem; font-weight: 600; }
+    .header h1 { font-size: 1.2rem; font-weight: 600; }
     .header p { font-size: 0.75rem; opacity: 0.85; margin-top: 2px; }
     .scroll-container {
       padding: 16px;
@@ -78,7 +78,7 @@
       background: white;
     }
     .shape-card:hover { border-color: #2563eb; background-color: #eff6ff; }
-    .shape-card svg { width: 44px; height: 44px; }
+    .shape-card svg { width: 48px; height: 48px; }
     .shape-card span { font-size: 0.75rem; margin-top: 4px; font-weight: 500; text-align: center; }
 
     /* Palette */
@@ -152,7 +152,7 @@
     }
     #canvas-container {
       flex-grow: 1;
-      background-color: #ffffff;
+      background-color: #e5e7eb;
       overflow: auto;
       display: flex;
       align-items: center;
@@ -160,15 +160,14 @@
       position: relative;
     }
     svg#canvas {
-      background-color: #ffffff;
+      background-color: white;
       box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
       cursor: default;
     }
     
     /* Interactive SVG Items */
     .bead { cursor: move; }
-    .bead.selected { outline: none; }
-    .bead.selected .bead-outline { stroke: #2563eb !important; stroke-width: 2px !important; }
+    .bead.selected .bead-outline { stroke: #2563eb !important; stroke-width: 2.5px !important; stroke-dasharray: 3 3; }
     
     .shortcut-legend {
       font-size: 0.75rem;
@@ -186,21 +185,21 @@
   <!-- SIDEBAR -->
   <div id="sidebar">
     <div class="header">
-      <h1>Miyuki Bead Designer</h1>
-      <p>Brick & Peyote Stitch Chart Designer</p>
+      <h1>Miyuki Pattern Designer</h1>
+      <p>Peyote & Brick Stitch Layout Tool</p>
     </div>
 
     <div class="scroll-container">
       
-      <!-- Design Template Guides -->
+      <!-- Design Guides -->
       <div>
-        <div class="section-title">Earring & Shape Guides</div>
+        <div class="section-title">Earring & Design Guides</div>
         <select id="guideSelect" class="guide-select">
           <option value="none">None (Blank Canvas)</option>
           <option value="earring-triangle">Earring: Triangle Fringe</option>
           <option value="earring-hoop">Earring: Circular / Hoop</option>
           <option value="earring-diamond">Earring: Diamond Shape</option>
-          <option value="butterfly">Butterfly Template Outline</option>
+          <option value="bracelet-rectangle">Bracelet Grid</option>
         </select>
       </div>
 
@@ -219,35 +218,53 @@
         <div class="section-title">Miyuki Bead Shapes</div>
         <div class="shapes-grid">
           <div class="shape-card" draggable="true" data-type="delica11">
-            <svg viewBox="-11 -11 22 22">
-              <rect x="-9" y="-9" width="18" height="18" rx="3.5" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
-              <rect x="-7.5" y="-7.5" width="15" height="15" rx="2.5" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.3"/>
+            <svg viewBox="-12 -12 24 24">
+              <rect x="-8" y="-8" width="16" height="16" rx="2" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
+              <rect x="-7" y="-7" width="14" height="14" rx="1.5" fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.4"/>
             </svg>
-            <span>Delica 11/0 (Chart Aspect)</span>
+            <span>Delica 11/0 (Peyote)</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="tila">
+            <svg viewBox="-16 -16 32 32">
+              <rect x="-13" y="-13" width="26" height="26" rx="2" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
+              <circle cx="-5" cy="0" r="1.5" fill="#ffffff" opacity="0.6"/>
+              <circle cx="5" cy="0" r="1.5" fill="#ffffff" opacity="0.6"/>
+            </svg>
+            <span>Full Tila (5x5mm)</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="half-tila">
+            <svg viewBox="-16 -16 32 32">
+              <rect x="-13" y="-6" width="26" height="12" rx="1.5" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
+              <circle cx="-5" cy="0" r="1.5" fill="#ffffff" opacity="0.6"/>
+              <circle cx="5" cy="0" r="1.5" fill="#ffffff" opacity="0.6"/>
+            </svg>
+            <span>Half Tila (5x2.3mm)</span>
+          </div>
+          <div class="shape-card" draggable="true" data-type="quarter-tila">
+            <svg viewBox="-16 -16 32 32">
+              <rect x="-13" y="-3.5" width="26" height="7" rx="1" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
+              <circle cx="-5" cy="0" r="1" fill="#ffffff" opacity="0.6"/>
+              <circle cx="5" cy="0" r="1" fill="#ffffff" opacity="0.6"/>
+            </svg>
+            <span>Quarter Tila (5x1.2mm)</span>
           </div>
           <div class="shape-card" draggable="true" data-type="round11">
-            <svg viewBox="-11 -11 22 22">
-              <circle cx="0" cy="0" r="8.5" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
-              <circle cx="-2" cy="-2" r="6" fill="none" stroke="#ffffff" stroke-width="1" opacity="0.4"/>
+            <svg viewBox="-12 -12 24 24">
+              <ellipse cx="0" cy="0" rx="8" ry="7" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
+              <ellipse cx="-2" cy="-2" rx="3" ry="2" fill="#ffffff" opacity="0.4"/>
             </svg>
             <span>Round Seed 11/0</span>
           </div>
           <div class="shape-card" draggable="true" data-type="drop">
             <svg viewBox="-12 -12 24 24">
-              <path d="M 0,-9 C 6,-2 6,7 0,9 C -6,7 -6,-2 0,-9 Z" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
+              <path d="M 0,-8 C 6,0 6,8 0,10 C -6,8 -6,0 0,-8 Z" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
             </svg>
             <span>Drop / Fringe</span>
-          </div>
-          <div class="shape-card" draggable="true" data-type="bugle">
-            <svg viewBox="-10 -20 20 40">
-              <rect x="-5" y="-18" width="10" height="36" rx="2" fill="#ea580c" stroke="#9a3412" stroke-width="0.8"/>
-            </svg>
-            <span>Bugle</span>
           </div>
         </div>
       </div>
 
-      <!-- Object Controls -->
+      <!-- Controls -->
       <div>
         <div class="section-title">Selected Bead Controls</div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
@@ -287,10 +304,10 @@
       <button class="btn" id="btnRedo">Redo</button>
       <div style="height: 20px; border-left: 1px solid #d1d5db; margin: 0 4px;"></div>
       <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-        <input type="checkbox" id="chkSnap" checked> Snap to Bead Grid (18px)
+        <input type="checkbox" id="chkSnap" checked> Snap to Grid (Peyote Spacing)
       </label>
       <label style="font-size: 0.85rem; display: flex; align-items: center; gap: 6px; cursor: pointer;">
-        <input type="checkbox" id="chkGrid" checked> Show Chart Grid
+        <input type="checkbox" id="chkGrid" checked> Show Background Grid
       </label>
       <div style="flex-grow: 1;"></div>
       <button class="btn btn-danger" id="btnReset">Reset Canvas</button>
@@ -300,9 +317,8 @@
     <div id="canvas-container">
       <svg id="canvas" width="800" height="650">
         <defs>
-          <!-- Chart Grid Pattern matching bead step spacing -->
-          <pattern id="gridPattern" width="18" height="18" patternUnits="userSpaceOnUse">
-            <path d="M 18 0 L 0 0 0 18" fill="none" stroke="#e5e7eb" stroke-width="1"/>
+          <pattern id="gridPattern" width="16" height="16" patternUnits="userSpaceOnUse">
+            <path d="M 16 0 L 0 0 0 16" fill="none" stroke="#f3f4f6" stroke-width="1"/>
           </pattern>
         </defs>
         <rect id="gridBackground" width="100%" height="100%" fill="url(#gridPattern)" />
@@ -317,19 +333,19 @@
     const STATE = {
       beads: [],
       selectedId: null,
-      currentColor: '#ea580c', // Soft orange matching butterfly photo
+      currentColor: '#ea580c',
       clipboard: null,
       history: [],
       historyStep: -1,
-      beadSize: 17, // 17px bead width
-      beadGap: 1,   // 1px gap = 18px grid step spacing
+      gridX: 16, // Delica width + spacing step
+      gridY: 16, // Delica height step
       nextId: 1
     };
 
     const presetColors = [
-      '#ea580c', '#000000', '#ffffff', '#06b6d4', '#f59e0b', 
-      '#ef4444', '#3b82f6', '#8b5cf6', '#ec4899', '#f97316', 
-      '#10b981', '#64748b', '#d97706', '#93c5fd', '#fde047'
+      '#ea580c', '#f97316', '#f59e0b', '#06b6d4', '#2563eb', 
+      '#ef4444', '#10b981', '#a855f7', '#ec4899', '#ffffff', 
+      '#000000', '#4b5563', '#92400e', '#047857', '#1e40af'
     ];
 
     // --- DOM REFERENCES ---
@@ -390,39 +406,60 @@
 
     customColorInput.addEventListener('input', (e) => selectColor(e.target.value, null));
 
-    // --- EXACT MATCH SVG GENERATOR FOR DELICA BEADS ---
-    function getDelicaBeadSVG(type, color) {
-      // Dark border matching bead tone
-      const strokeColor = color === '#ffffff' ? '#d1d5db' : '#00000055';
-      const highlightOpacity = color === '#000000' ? '0.15' : '0.35';
-
+    // --- DELICA & TILA SVG RENDERING WITH CORNER RADII & SPACING ---
+    function getBeadSVG(type, color) {
       switch(type) {
         case 'delica11': 
-          // Delica Aspect matching reference photo: Slightly rounded square/tile with soft inner bevel highlight
+          // Delica bead: square with rounded corners, subtle inner cushion highlight & border shadow
           return `
-            <!-- Main Bead Body -->
-            <rect class="bead-outline" x="-8.5" y="-8.5" width="17" height="17" rx="3.5" fill="${color}" stroke="${strokeColor}" stroke-width="0.8"/>
-            <!-- Top/Left 3D Bevel Soft Highlight -->
-            <path d="M -6.5,6.5 L -6.5,-4.5 C -6.5,-5.5 -5.5,-6.5 -4.5,-6.5 L 6.5,-6.5" fill="none" stroke="#ffffff" stroke-width="1.2" stroke-linecap="round" opacity="${highlightOpacity}"/>
-            <!-- Bottom Right Shadow -->
-            <path d="M 6.5,-4.5 L 6.5,4.5 C 6.5,5.5 5.5,6.5 4.5,6.5 L -4.5,6.5" fill="none" stroke="#000000" stroke-width="1" stroke-linecap="round" opacity="0.2"/>
+            <rect class="bead-outline" x="-7" y="-7" width="14" height="14" rx="2.5" fill="${color}" stroke="#00000055" stroke-width="0.8"/>
+            <rect x="-5.5" y="-5.5" width="11" height="11" rx="1.5" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.35"/>
+            <rect x="-7" y="-7" width="14" height="14" rx="2.5" fill="none" stroke="#000000" stroke-width="0.5" opacity="0.25"/>
           `;
+
+        case 'tila': 
+          // Full Tila (5x5mm tile with 2 thread holes)
+          return `
+            <rect class="bead-outline" x="-15" y="-15" width="30" height="30" rx="3" fill="${color}" stroke="#00000055" stroke-width="0.8"/>
+            <rect x="-13.5" y="-13.5" width="27" height="27" rx="2" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.35"/>
+            <circle cx="-6" cy="0" r="1.8" fill="#ffffff" opacity="0.7" stroke="#00000033" stroke-width="0.5"/>
+            <circle cx="6" cy="0" r="1.8" fill="#ffffff" opacity="0.7" stroke="#00000033" stroke-width="0.5"/>
+          `;
+
+        case 'half-tila': 
+          // Half Tila (5x2.3mm rectangular tile with 2 holes)
+          return `
+            <rect class="bead-outline" x="-15" y="-7" width="30" height="14" rx="2" fill="${color}" stroke="#00000055" stroke-width="0.8"/>
+            <rect x="-13.5" y="-5.5" width="27" height="11" rx="1" fill="none" stroke="#ffffff" stroke-width="0.8" opacity="0.35"/>
+            <circle cx="-6" cy="0" r="1.5" fill="#ffffff" opacity="0.7" stroke="#00000033" stroke-width="0.5"/>
+            <circle cx="6" cy="0" r="1.5" fill="#ffffff" opacity="0.7" stroke="#00000033" stroke-width="0.5"/>
+          `;
+
+        case 'quarter-tila': 
+          // Quarter Tila (5x1.2mm slim tile with 2 holes)
+          return `
+            <rect class="bead-outline" x="-15" y="-4" width="30" height="8" rx="1.5" fill="${color}" stroke="#00000055" stroke-width="0.8"/>
+            <rect x="-13.5" y="-3" width="27" height="6" rx="0.8" fill="none" stroke="#ffffff" stroke-width="0.6" opacity="0.35"/>
+            <circle cx="-6" cy="0" r="1.2" fill="#ffffff" opacity="0.7"/>
+            <circle cx="6" cy="0" r="1.2" fill="#ffffff" opacity="0.7"/>
+          `;
+
         case 'round11': 
+          // Standard Round seed bead
           return `
-            <circle class="bead-outline" cx="0" cy="0" r="8" fill="${color}" stroke="${strokeColor}" stroke-width="0.8"/>
-            <circle cx="-2.5" cy="-2.5" r="5" fill="none" stroke="#ffffff" stroke-width="1.2" opacity="${highlightOpacity}"/>
+            <ellipse class="bead-outline" cx="0" cy="0" rx="7.5" ry="6.5" fill="${color}" stroke="#00000055" stroke-width="0.8"/>
+            <ellipse cx="-2" cy="-2" rx="3" ry="2" fill="#ffffff" opacity="0.4"/>
           `;
-        case 'drop':
+
+        case 'drop': 
+          // Drop / Fringe bead
           return `
-            <path class="bead-outline" d="M 0,-9 C 6,-2 6,7 0,9 C -6,7 -6,-2 0,-9 Z" fill="${color}" stroke="${strokeColor}" stroke-width="0.8"/>
+            <path class="bead-outline" d="M 0,-10 C 7,-2 7,8 0,10 C -7,8 -7,-2 0,-10 Z" fill="${color}" stroke="#00000055" stroke-width="0.8"/>
+            <circle cx="0" cy="-5" r="1.5" fill="#ffffff" opacity="0.7"/>
           `;
-        case 'bugle':
-          return `
-            <rect class="bead-outline" x="-4.5" y="-17.5" width="9" height="35" rx="2" fill="${color}" stroke="${strokeColor}" stroke-width="0.8"/>
-            <line x1="-2" y1="-15" x2="-2" y2="15" stroke="#ffffff" stroke-width="1" opacity="${highlightOpacity}"/>
-          `;
+
         default:
-          return `<rect class="bead-outline" x="-8.5" y="-8.5" width="17" height="17" rx="3" fill="${color}"/>`;
+          return `<rect class="bead-outline" x="-7" y="-7" width="14" height="14" rx="2" fill="${color}"/>`;
       }
     }
 
@@ -435,22 +472,30 @@
       const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
       g.setAttribute('stroke', '#2563eb');
       g.setAttribute('stroke-width', '1.5');
-      g.setAttribute('stroke-dasharray', '4 4');
+      g.setAttribute('stroke-dasharray', '5 4');
       g.setAttribute('fill', 'none');
-      g.setAttribute('opacity', '0.35');
+      g.setAttribute('opacity', '0.4');
 
       const cx = 400, cy = 325;
 
       if (type === 'earring-triangle') {
-        g.innerHTML = `<polygon points="${cx},${cy - 180} ${cx - 144},${cy + 108} ${cx + 144},${cy + 108}" />`;
-      } else if (type === 'earring-hoop') {
-        g.innerHTML = `<circle cx="${cx}" cy="${cy}" r="144" />`;
-      } else if (type === 'earring-diamond') {
-        g.innerHTML = `<polygon points="${cx},${cy - 162} ${cx + 126},${cy} ${cx},${cy + 162} ${cx - 126},${cy}" />`;
-      } else if (type === 'butterfly') {
         g.innerHTML = `
-          <path d="M ${cx - 180},${cy - 90} C ${cx - 90},${cy - 180} ${cx},${cy - 90} ${cx},${cy} C ${cx},${cy + 90} ${cx - 120},${cy + 140} ${cx - 180},${cy - 90} Z" />
-          <path d="M ${cx + 180},${cy - 90} C ${cx + 90},${cy - 180} ${cx},${cy - 90} ${cx},${cy} C ${cx},${cy + 90} ${cx + 120},${cy + 140} ${cx + 180},${cy - 90} Z" />
+          <polygon points="${cx},${cy - 180} ${cx - 160},${cy + 120} ${cx + 160},${cy + 120}" />
+          <circle cx="${cx}" cy="${cy - 195}" r="7" stroke-dasharray="none"/>
+        `;
+      } else if (type === 'earring-hoop') {
+        g.innerHTML = `
+          <circle cx="${cx}" cy="${cy}" r="140" />
+          <circle cx="${cx}" cy="${cy - 150}" r="6" stroke-dasharray="none"/>
+        `;
+      } else if (type === 'earring-diamond') {
+        g.innerHTML = `
+          <polygon points="${cx},${cy - 170} ${cx + 130},${cy} ${cx},${cy + 170} ${cx - 130},${cy}" />
+          <circle cx="${cx}" cy="${cy - 185}" r="6" stroke-dasharray="none"/>
+        `;
+      } else if (type === 'bracelet-rectangle') {
+        g.innerHTML = `
+          <rect x="${cx - 250}" y="${cy - 100}" width="500" height="200" rx="4" />
         `;
       }
 
@@ -479,9 +524,8 @@
         let y = e.clientY - rect.top;
 
         if (chkSnap.checked) {
-          const step = STATE.beadSize + STATE.beadGap; // 18px spacing
-          x = Math.floor(x / step) * step + step / 2;
-          y = Math.floor(y / step) * step + step / 2;
+          x = Math.round(x / STATE.gridX) * STATE.gridX;
+          y = Math.round(y / STATE.gridY) * STATE.gridY;
         }
 
         addBead(type, x, y);
@@ -513,7 +557,7 @@
         g.setAttribute('transform', `translate(${bead.x}, ${bead.y}) rotate(${bead.rotation})`);
         g.setAttribute('data-id', bead.id);
 
-        g.innerHTML = getDelicaBeadSVG(bead.type, bead.color);
+        g.innerHTML = getBeadSVG(bead.type, bead.color);
 
         g.addEventListener('mousedown', (e) => startDraggingBead(e, bead.id));
 
@@ -523,7 +567,7 @@
       updateUI();
     }
 
-    // --- INTERACTIVE DRAGGING ---
+    // --- INTERACTIVE MOVING ---
     let isDragging = false;
     let dragOffset = { x: 0, y: 0 };
 
@@ -556,9 +600,8 @@
       let newY = (e.clientY - rect.top) - dragOffset.y;
 
       if (chkSnap.checked) {
-        const step = STATE.beadSize + STATE.beadGap; // 18px step spacing with 1px gap
-        newX = Math.floor(newX / step) * step + step / 2;
-        newY = Math.floor(newY / step) * step + step / 2;
+        newX = Math.round(newX / STATE.gridX) * STATE.gridX;
+        newY = Math.round(newY / STATE.gridY) * STATE.gridY;
       }
 
       bead.x = newX;
@@ -586,7 +629,7 @@
       }
     });
 
-    // --- CONTROLS & LISTENERS ---
+    // --- UI LISTENERS & CONTROL LOGIC ---
     function updateUI() {
       const selectedBead = STATE.beads.find(b => b.id === STATE.selectedId);
       const hasSelection = !!selectedBead;
@@ -678,12 +721,11 @@
 
     function pasteBead() {
       if (STATE.clipboard) {
-        const step = STATE.beadSize + STATE.beadGap;
         const newBead = {
           ...STATE.clipboard,
           id: STATE.nextId++,
-          x: STATE.clipboard.x + step,
-          y: STATE.clipboard.y
+          x: STATE.clipboard.x + 16,
+          y: STATE.clipboard.y + 16
         };
         STATE.beads.push(newBead);
         STATE.selectedId = newBead.id;
@@ -701,7 +743,6 @@
       }
     }
 
-    // Keyboard controls (micro-movements 1px / 18px step)
     function handleKeydown(e) {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
 
@@ -736,10 +777,9 @@
         }
       }
 
-      // Micro-movement with Keyboard Arrows
       if (STATE.selectedId !== null && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
         const bead = STATE.beads.find(b => b.id === STATE.selectedId);
-        const step = e.shiftKey ? (STATE.beadSize + STATE.beadGap) : 1; // 1px default, or 18px step if Shift held
+        const step = e.shiftKey ? 10 : 1;
 
         if (e.key === 'ArrowUp') bead.y -= step;
         if (e.key === 'ArrowDown') bead.y += step;
@@ -802,7 +842,7 @@
         URL.revokeObjectURL(url);
 
         const a = document.createElement('a');
-        a.download = 'miyuki-butterfly-chart.png';
+        a.download = 'miyuki-pattern.png';
         a.href = outputCanvas.toDataURL('image/png');
         a.click();
 
