@@ -279,8 +279,7 @@
           </div>
           <div class="shape-card" draggable="true" data-type="donut">
             <svg viewBox="-14 -14 28 28">
-              <circle cx="0" cy="0" r="11" fill="#ef4444" stroke="#b91c1c"/>
-              <circle cx="0" cy="0" r="4" fill="#ffffff"/>
+              <path d="M 0,-11 A 11 11 0 1 0 0 11 A 11 11 0 1 0 0 -11 Z M 0,-4 A 4 4 0 1 1 0 4 A 4 4 0 1 1 0 -4 Z" fill-rule="evenodd" fill="#ef4444" stroke="#b91c1c" stroke-width="0.8"/>
             </svg>
             <span>Donut (8mm)</span>
           </div>
@@ -391,21 +390,20 @@
       pasteAngle: 90
     };
 
-    // Explicit dimensions for seamless flush placement
-    const BEAD_SIZES = {
-      delica11: { w: 16, h: 14 },
-      tila: { w: 28, h: 28 },
-      halftila: { w: 28, h: 14 },
-      quartertila: { w: 28, h: 8 },
-      round11: { w: 16, h: 14 },
-      oval: { w: 32, h: 16 },
-      rondelle: { w: 24, h: 14 },
-      cube: { w: 18, h: 18 },
-      briolette: { w: 18, h: 25 },
-      crescent: { w: 28, h: 14 },
-      hexagon: { w: 20, h: 22 },
-      peanut: { w: 12, h: 20 },
-      donut: { w: 22, h: 22 }
+    const BEAD_PITCH = {
+      delica11:    { stepW: 17, stepH: 14 },
+      tila:        { stepW: 29, stepH: 28 },
+      halftila:    { stepW: 29, stepH: 14 },
+      quartertila: { stepW: 29, stepH: 8  },
+      round11:     { stepW: 17, stepH: 14 },
+      oval:        { stepW: 33, stepH: 16 },
+      rondelle:    { stepW: 25, stepH: 14 },
+      cube:        { stepW: 19, stepH: 18 },
+      briolette:   { stepW: 19, stepH: 24 },
+      crescent:    { stepW: 29, stepH: 12 },
+      hexagon:     { stepW: 21, stepH: 12 },
+      peanut:      { stepW: 13, stepH: 18 },
+      donut:       { stepW: 23, stepH: 22 }
     };
 
     const presetColors = [
@@ -417,6 +415,7 @@
     const canvas = document.getElementById('canvas');
     const beadsGroup = document.getElementById('beadsGroup');
     const guideGroup = document.getElementById('guideGroup');
+    const gridBackground = document.getElementById('gridBackground');
     const palette = document.getElementById('palette');
     const customColorInput = document.getElementById('customColor');
     const guideSelect = document.getElementById('guideSelect');
@@ -472,35 +471,34 @@
     function getBeadSVG(type, color) {
       switch(type) {
         case 'delica11':
-          return `<rect class="bead-body" x="-8" y="-7" width="16" height="14" rx="2.5" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+          return `<rect class="bead-body" x="-8" y="-7" width="16" height="14" rx="2.5" fill="${color}" stroke="#000000" stroke-width="0.8"/>
                   <rect x="-6" y="-5" width="12" height="10" rx="1.5" fill="#ffffff" opacity="0.25"/>`;
         case 'tila':
-          return `<rect class="bead-body" x="-14" y="-14" width="28" height="28" rx="2" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
+          return `<rect class="bead-body" x="-14" y="-14" width="28" height="28" rx="2" fill="${color}" stroke="#000000" stroke-width="0.8"/>
                   <circle cx="-6" cy="0" r="2" fill="#000000" opacity="0.2"/>
                   <circle cx="6" cy="0" r="2" fill="#000000" opacity="0.2"/>`;
         case 'halftila':
-          return `<rect class="bead-body" x="-14" y="-7" width="28" height="14" rx="2" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<rect class="bead-body" x="-14" y="-7" width="28" height="14" rx="2" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'quartertila':
-          return `<rect class="bead-body" x="-14" y="-4" width="28" height="8" rx="1.5" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<rect class="bead-body" x="-14" y="-4" width="28" height="8" rx="1.5" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'round11':
-          return `<ellipse class="bead-body" cx="0" cy="0" rx="8" ry="7" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<ellipse class="bead-body" cx="0" cy="0" rx="8" ry="7" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'oval':
-          return `<ellipse class="bead-body" cx="0" cy="0" rx="16" ry="8" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<ellipse class="bead-body" cx="0" cy="0" rx="16" ry="8" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'rondelle':
-          return `<ellipse class="bead-body" cx="0" cy="0" rx="12" ry="7" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<ellipse class="bead-body" cx="0" cy="0" rx="12" ry="7" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'cube':
-          return `<rect class="bead-body" x="-9" y="-9" width="18" height="18" rx="1.5" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<rect class="bead-body" x="-9" y="-9" width="18" height="18" rx="1.5" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'briolette':
-          return `<path class="bead-body" d="M 0,-12 C 9,-2 9,11 0,13 C -9,11 -9,-2 0,-12 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<path class="bead-body" d="M 0,-12 C 9,-2 9,11 0,13 C -9,11 -9,-2 0,-12 Z" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'crescent':
-          return `<path class="bead-body" d="M -14,-7 A 14,14 0 0,0 14,-7 A 11,11 0 0,1 -14,-7 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<path class="bead-body" d="M -14,-7 A 14,14 0 0,0 14,-7 A 11,11 0 0,1 -14,-7 Z" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'hexagon':
-          return `<polygon class="bead-body" points="0,-11 10,-6 10,6 0,11 -10,6 -10,-6" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<polygon class="bead-body" points="0,-11 10,-6 10,6 0,11 -10,6 -10,-6" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'peanut':
-          return `<path class="bead-body" d="M -6,-10 A 6,6 0 0,1 6,-10 A 4,4 0 0,1 6,0 A 6,6 0 0,1 6,10 A 6,6 0 0,1 -6,10 A 4,4 0 0,1 -6,0 A 6,6 0 0,1 -6,-10 Z" fill="${color}" stroke="#00000033" stroke-width="0.8"/>`;
+          return `<path class="bead-body" d="M -6,-10 A 6,6 0 0,1 6,-10 A 4,4 0 0,1 6,0 A 6,6 0 0,1 6,10 A 6,6 0 0,1 -6,10 A 4,4 0 0,1 -6,0 A 6,6 0 0,1 -6,-10 Z" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         case 'donut':
-          return `<circle class="bead-body" cx="0" cy="0" r="11" fill="${color}" stroke="#00000033" stroke-width="0.8"/>
-                  <circle cx="0" cy="0" r="4" fill="#ffffff" stroke="#00000033" stroke-width="0.5"/>`;
+          return `<path class="bead-body" d="M 0,-11 A 11 11 0 1 0 0 11 A 11 11 0 1 0 0 -11 Z M 0,-4 A 4 4 0 1 1 0 4 A 4 4 0 1 1 0 -4 Z" fill-rule="evenodd" fill="${color}" stroke="#000000" stroke-width="0.8"/>`;
         default:
           return `<rect class="bead-body" x="-8" y="-7" width="16" height="14" fill="${color}"/>`;
       }
@@ -805,22 +803,20 @@
         const pasteRad = (STATE.pasteAngle * Math.PI) / 180;
 
         STATE.clipboard.forEach(b => {
-          const size = BEAD_SIZES[b.type] || { w: 16, h: 14 };
+          const pitch = BEAD_PITCH[b.type] || { stepW: 17, stepH: 14 };
 
           let stepSize = 0;
           const isVertical = (STATE.pasteAngle % 180 === 90);
           const isHorizontal = (STATE.pasteAngle % 180 === 0);
 
           if (isVertical) {
-            // Rotated 90/270 degrees swap height/width
-            stepSize = (b.rotation % 180 === 90) ? size.w : size.h;
+            stepSize = (b.rotation % 180 === 90) ? pitch.stepW : pitch.stepH;
           } else if (isHorizontal) {
-            stepSize = (b.rotation % 180 === 90) ? size.h : size.w;
+            stepSize = (b.rotation % 180 === 90) ? pitch.stepH : pitch.stepW;
           } else {
-            // Trigonometric diagonal calculation
             const selfRad = (b.rotation * Math.PI) / 180;
-            const effW = Math.abs(size.w * Math.cos(selfRad)) + Math.abs(size.h * Math.sin(selfRad));
-            const effH = Math.abs(size.w * Math.sin(selfRad)) + Math.abs(size.h * Math.cos(selfRad));
+            const effW = Math.abs(pitch.stepW * Math.cos(selfRad)) + Math.abs(pitch.stepH * Math.sin(selfRad));
+            const effH = Math.abs(pitch.stepW * Math.sin(selfRad)) + Math.abs(pitch.stepH * Math.cos(selfRad));
             stepSize = Math.abs(effW * Math.cos(pasteRad)) + Math.abs(effH * Math.sin(pasteRad));
           }
 
@@ -858,7 +854,7 @@
     }
 
     function handleKeydown(e) {
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT') return;
+      if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement.tagName)) return;
 
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         if (e.shiftKey) redo(); else undo();
@@ -909,6 +905,7 @@
       if (STATE.historyStep > 0) {
         STATE.historyStep--;
         STATE.beads = JSON.parse(STATE.history[STATE.historyStep]);
+        STATE.selectedIds = [];
         syncNextId();
         syncAngleControls();
         render();
@@ -919,6 +916,7 @@
       if (STATE.historyStep < STATE.history.length - 1) {
         STATE.historyStep++;
         STATE.beads = JSON.parse(STATE.history[STATE.historyStep]);
+        STATE.selectedIds = [];
         syncNextId();
         syncAngleControls();
         render();
@@ -928,6 +926,7 @@
     function exportPNG() {
       const savedSelected = [...STATE.selectedIds];
       STATE.selectedIds = [];
+      gridBackground.style.display = 'none';
       render();
 
       const serializer = new XMLSerializer();
@@ -953,6 +952,7 @@
         a.href = outputCanvas.toDataURL('image/png');
         a.click();
 
+        gridBackground.style.display = 'block';
         STATE.selectedIds = savedSelected;
         syncAngleControls();
         render();
