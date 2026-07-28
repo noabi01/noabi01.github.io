@@ -304,19 +304,19 @@
         <div class="angle-control" style="margin-bottom: 8px;">
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600;">
             <span>Paste Direction:</span>
-            <span><span id="pasteAngleValue">90</span>°</span>
+            <span><span id="pasteAngleValue">0</span>°</span>
           </div>
           <div class="angle-row">
             <select id="pasteDirSelect" style="padding: 4px; font-size: 0.75rem; border-radius: 4px; border: 1px solid #d1d5db;">
-              <option value="90" selected>Down (90°)</option>
-              <option value="0">Right (0°)</option>
+              <option value="0" selected>Right (0°)</option>
+              <option value="90">Down (90°)</option>
               <option value="270">Up (270°)</option>
               <option value="180">Left (180°)</option>
               <option value="custom">Custom Angle Slider</option>
             </select>
           </div>
           <div class="angle-row" id="customPasteSliderRow" style="display:none; margin-top:4px;">
-            <input type="range" id="pasteAngleSlider" min="0" max="360" value="90" step="1">
+            <input type="range" id="pasteAngleSlider" min="0" max="360" value="0" step="1">
           </div>
         </div>
 
@@ -387,23 +387,23 @@
       gridX: 16,
       gridY: 14,
       nextId: 1,
-      pasteAngle: 90
+      pasteAngle: 0
     };
 
     const BEAD_PITCH = {
-      delica11:    { stepW: 17, stepH: 14 },
-      tila:        { stepW: 29, stepH: 28 },
-      halftila:    { stepW: 29, stepH: 14 },
-      quartertila: { stepW: 29, stepH: 8  },
-      round11:     { stepW: 17, stepH: 14 },
-      oval:        { stepW: 33, stepH: 16 },
-      rondelle:    { stepW: 25, stepH: 14 },
-      cube:        { stepW: 19, stepH: 18 },
-      briolette:   { stepW: 19, stepH: 24 },
-      crescent:    { stepW: 29, stepH: 12 },
-      hexagon:     { stepW: 21, stepH: 12 },
-      peanut:      { stepW: 13, stepH: 18 },
-      donut:       { stepW: 23, stepH: 22 }
+      delica11:    { stepW: 16, stepH: 14 },
+      tila:        { stepW: 28, stepH: 28 },
+      halftila:    { stepW: 28, stepH: 14 },
+      quartertila: { stepW: 28, stepH: 8  },
+      round11:     { stepW: 16, stepH: 14 },
+      oval:        { stepW: 32, stepH: 16 },
+      rondelle:    { stepW: 24, stepH: 14 },
+      cube:        { stepW: 18, stepH: 18 },
+      briolette:   { stepW: 18, stepH: 24 },
+      crescent:    { stepW: 28, stepH: 12 },
+      hexagon:     { stepW: 20, stepH: 22 },
+      peanut:      { stepW: 12, stepH: 18 },
+      donut:       { stepW: 22, stepH: 22 }
     };
 
     const presetColors = [
@@ -802,29 +802,41 @@
         const newIds = [];
         const pasteRad = (STATE.pasteAngle * Math.PI) / 180;
 
+        // Calculate total dimensions of current copied selection
+        const xs = STATE.clipboard.map(b => b.x);
+        const ys = STATE.clipboard.map(b => b.y);
+        const minX = Math.min(...xs), maxX = Math.max(...xs);
+        const minY = Math.min(...ys), maxY = Math.max(...ys);
+
+        // Find max bead dimension in group
+        let maxW = 0, maxH = 0;
         STATE.clipboard.forEach(b => {
-          const pitch = BEAD_PITCH[b.type] || { stepW: 17, stepH: 14 };
-
-          let stepSize = 0;
-          const isVertical = (STATE.pasteAngle % 180 === 90);
-          const isHorizontal = (STATE.pasteAngle % 180 === 0);
-
-          if (isVertical) {
-            stepSize = (b.rotation % 180 === 90) ? pitch.stepW : pitch.stepH;
-          } else if (isHorizontal) {
-            stepSize = (b.rotation % 180 === 90) ? pitch.stepH : pitch.stepW;
+          const pitch = BEAD_PITCH[b.type] || { stepW: 16, stepH: 14 };
+          if (b.rotation % 180 === 90) {
+            maxW = Math.max(maxW, pitch.stepH);
+            maxH = Math.max(maxH, pitch.stepW);
           } else {
-            const selfRad = (b.rotation * Math.PI) / 180;
-            const effW = Math.abs(pitch.stepW * Math.cos(selfRad)) + Math.abs(pitch.stepH * Math.sin(selfRad));
-            const effH = Math.abs(pitch.stepW * Math.sin(selfRad)) + Math.abs(pitch.stepH * Math.cos(selfRad));
-            stepSize = Math.abs(effW * Math.cos(pasteRad)) + Math.abs(effH * Math.sin(pasteRad));
+            maxW = Math.max(maxW, pitch.stepW);
+            maxH = Math.max(maxH, pitch.stepH);
           }
+        });
 
-          const baseStep = stepSize * STATE.pasteOffsetCount;
-          
-          const offsetX = Math.round(Math.cos(pasteRad) * baseStep);
-          const offsetY = Math.round(Math.sin(pasteRad) * baseStep);
+        const spanX = (maxX - minX) + maxW;
+        const spanY = (maxY - minY) + maxH;
 
+        // Compute relative displacement vector
+        const stepDist = Math.abs(Math.cos(pasteRad)) * spanX + Math.abs(Math.sin(pasteRad)) * spanY;
+        const totalDist = stepDist * STATE.pasteOffsetCount;
+
+        let offsetX = Math.round(Math.cos(pasteRad) * totalDist);
+        let offsetY = Math.round(Math.sin(pasteRad) * totalDist);
+
+        if (chkSnap.checked && !chkFineSnap.checked) {
+          offsetX = Math.round(offsetX / STATE.gridX) * STATE.gridX;
+          offsetY = Math.round(offsetY / STATE.gridY) * STATE.gridY;
+        }
+
+        STATE.clipboard.forEach(b => {
           const newBead = {
             ...b,
             id: STATE.nextId++,
