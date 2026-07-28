@@ -287,13 +287,13 @@
         </div>
       </div>
 
-      <!-- Controls & 0°-360° Angle Selector -->
+      <!-- Controls & CONTINUOUS 0°-360° ANGLE SELECTOR -->
       <div>
         <div class="section-title">Selected Orientation & Tools</div>
         
         <div class="angle-control" style="margin-bottom: 8px;">
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600;">
-            <span>Rotation Angle:</span>
+            <span>Angle Selector:</span>
             <span><span id="angleValue">0</span>°</span>
           </div>
           <div class="angle-row">
@@ -369,6 +369,23 @@
       gridX: 16,
       gridY: 14,
       nextId: 1
+    };
+
+    // Specific bounding dimension overrides per shape type to prevent pasting overlaps
+    const BEAD_SIZES = {
+      delica11: { w: 16, h: 14 },
+      tila: { w: 28, h: 28 },
+      halftila: { w: 28, h: 14 },
+      quartertila: { w: 28, h: 8 },
+      round11: { w: 16, h: 14 },
+      oval: { w: 32, h: 16 },
+      rondelle: { w: 24, h: 14 },
+      cube: { w: 18, h: 18 },
+      briolette: { w: 18, h: 25 },
+      crescent: { w: 28, h: 14 },
+      hexagon: { w: 20, h: 22 },
+      peanut: { w: 12, h: 20 },
+      donut: { w: 22, h: 22 }
     };
 
     const presetColors = [
@@ -747,7 +764,12 @@
 
         STATE.clipboard.forEach(b => {
           const rad = (b.rotation * Math.PI) / 180;
-          const baseStep = 16 * STATE.pasteOffsetCount;
+          
+          // Get shape-specific bounding dimension to calculate seamless step gap
+          const size = BEAD_SIZES[b.type] || { w: 16, h: 14 };
+          const stepSize = Math.max(size.w, size.h);
+          
+          const baseStep = stepSize * STATE.pasteOffsetCount;
           
           const offsetX = Math.round(Math.cos(rad) * baseStep);
           const offsetY = Math.round(Math.sin(rad) * baseStep);
