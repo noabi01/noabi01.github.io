@@ -289,16 +289,35 @@
 
       <!-- Controls & ANGLE SELECTOR -->
       <div>
-        <div class="section-title">Selected Orientation & Tools</div>
+        <div class="section-title">Selected Rotation & Tools</div>
         
         <div class="angle-control" style="margin-bottom: 8px;">
           <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600;">
-            <span>Angle Selector:</span>
+            <span>Shape Rotation:</span>
             <span><span id="angleValue">0</span>°</span>
           </div>
           <div class="angle-row">
             <input type="range" id="angleSlider" min="0" max="360" value="0" step="1">
             <input type="number" id="angleInput" min="0" max="360" value="0" style="width: 55px; padding: 4px; border-radius: 4px; border: 1px solid #d1d5db; font-size: 0.75rem;">
+          </div>
+        </div>
+
+        <div class="angle-control" style="margin-bottom: 8px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; font-weight: 600;">
+            <span>Paste Direction:</span>
+            <span><span id="pasteAngleValue">90</span>°</span>
+          </div>
+          <div class="angle-row">
+            <select id="pasteDirSelect" style="padding: 4px; font-size: 0.75rem; border-radius: 4px; border: 1px solid #d1d5db;">
+              <option value="90" selected>Down (90°)</option>
+              <option value="0">Right (0°)</option>
+              <option value="270">Up (270°)</option>
+              <option value="180">Left (180°)</option>
+              <option value="custom">Custom Angle Slider</option>
+            </select>
+          </div>
+          <div class="angle-row" id="customPasteSliderRow" style="display:none; margin-top:4px;">
+            <input type="range" id="pasteAngleSlider" min="0" max="360" value="90" step="1">
           </div>
         </div>
 
@@ -368,10 +387,11 @@
       historyStep: -1,
       gridX: 16,
       gridY: 14,
-      nextId: 1
+      nextId: 1,
+      pasteAngle: 90
     };
 
-    // Accurate bounding box dimensions for flush placement
+    // Explicit dimensions for seamless flush placement
     const BEAD_SIZES = {
       delica11: { w: 16, h: 14 },
       tila: { w: 28, h: 28 },
@@ -409,6 +429,11 @@
     const angleSlider = document.getElementById('angleSlider');
     const angleInput = document.getElementById('angleInput');
     const angleValue = document.getElementById('angleValue');
+
+    const pasteDirSelect = document.getElementById('pasteDirSelect');
+    const pasteAngleSlider = document.getElementById('pasteAngleSlider');
+    const customPasteSliderRow = document.getElementById('customPasteSliderRow');
+    const pasteAngleValue = document.getElementById('pasteAngleValue');
 
     function init() {
       setupPalette();
@@ -692,6 +717,22 @@
         setOrientation(val);
       });
 
+      pasteDirSelect.addEventListener('change', (e) => {
+        if (e.target.value === 'custom') {
+          customPasteSliderRow.style.display = 'flex';
+          STATE.pasteAngle = parseInt(pasteAngleSlider.value);
+        } else {
+          customPasteSliderRow.style.display = 'none';
+          STATE.pasteAngle = parseInt(e.target.value);
+        }
+        pasteAngleValue.textContent = STATE.pasteAngle;
+      });
+
+      pasteAngleSlider.addEventListener('input', (e) => {
+        STATE.pasteAngle = parseInt(e.target.value);
+        pasteAngleValue.textContent = STATE.pasteAngle;
+      });
+
       document.getElementById('btnCopy').addEventListener('click', copyBeads);
       document.getElementById('btnPaste').addEventListener('click', pasteBeads);
       document.getElementById('btnDelete').addEventListener('click', deleteBeads);
@@ -761,23 +802,32 @@
     function pasteBeads() {
       if (STATE.clipboard.length > 0) {
         const newIds = [];
+        const pasteRad = (STATE.pasteAngle * Math.PI) / 180;
 
         STATE.clipboard.forEach(b => {
-          const rad = (b.rotation * Math.PI) / 180;
-          
           const size = BEAD_SIZES[b.type] || { w: 16, h: 14 };
 
-          // Dynamically compute effective span based on actual orientation angle
-          const absCos = Math.abs(Math.cos(rad));
-          const absSin = Math.abs(Math.sin(rad));
-          
-          // Compute true dimension along the direction vector
-          const stepSize = (size.w * absCos) + (size.h * absSin);
+          let stepSize = 0;
+          const isVertical = (STATE.pasteAngle % 180 === 90);
+          const isHorizontal = (STATE.pasteAngle % 180 === 0);
+
+          if (isVertical) {
+            // Rotated 90/270 degrees swap height/width
+            stepSize = (b.rotation % 180 === 90) ? size.w : size.h;
+          } else if (isHorizontal) {
+            stepSize = (b.rotation % 180 === 90) ? size.h : size.w;
+          } else {
+            // Trigonometric diagonal calculation
+            const selfRad = (b.rotation * Math.PI) / 180;
+            const effW = Math.abs(size.w * Math.cos(selfRad)) + Math.abs(size.h * Math.sin(selfRad));
+            const effH = Math.abs(size.w * Math.sin(selfRad)) + Math.abs(size.h * Math.cos(selfRad));
+            stepSize = Math.abs(effW * Math.cos(pasteRad)) + Math.abs(effH * Math.sin(pasteRad));
+          }
 
           const baseStep = stepSize * STATE.pasteOffsetCount;
           
-          const offsetX = Math.round(Math.cos(rad) * baseStep);
-          const offsetY = Math.round(Math.sin(rad) * baseStep);
+          const offsetX = Math.round(Math.cos(pasteRad) * baseStep);
+          const offsetY = Math.round(Math.sin(pasteRad) * baseStep);
 
           const newBead = {
             ...b,
