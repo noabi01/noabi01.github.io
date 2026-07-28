@@ -287,7 +287,7 @@
         </div>
       </div>
 
-      <!-- Controls & CONTINUOUS 0°-360° ANGLE SELECTOR -->
+      <!-- Controls & ANGLE SELECTOR -->
       <div>
         <div class="section-title">Selected Orientation & Tools</div>
         
@@ -371,7 +371,7 @@
       nextId: 1
     };
 
-    // Specific bounding dimension overrides per shape type to prevent pasting overlaps
+    // Accurate bounding box dimensions for flush placement
     const BEAD_SIZES = {
       delica11: { w: 16, h: 14 },
       tila: { w: 28, h: 28 },
@@ -765,10 +765,15 @@
         STATE.clipboard.forEach(b => {
           const rad = (b.rotation * Math.PI) / 180;
           
-          // Get shape-specific bounding dimension to calculate seamless step gap
           const size = BEAD_SIZES[b.type] || { w: 16, h: 14 };
-          const stepSize = Math.max(size.w, size.h);
+
+          // Dynamically compute effective span based on actual orientation angle
+          const absCos = Math.abs(Math.cos(rad));
+          const absSin = Math.abs(Math.sin(rad));
           
+          // Compute true dimension along the direction vector
+          const stepSize = (size.w * absCos) + (size.h * absSin);
+
           const baseStep = stepSize * STATE.pasteOffsetCount;
           
           const offsetX = Math.round(Math.cos(rad) * baseStep);
